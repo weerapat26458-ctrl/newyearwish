@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ส่งคำอวยพร</title>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; width: 80%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { color: #ff6b81; margin-top: 0; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; border: none; background: #ff6b81; color: white; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+        button:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🎄 ส่งคำอวยพร 🎉</h1>
+        <p>ข้อความของคุณจะไปปรากฏบนจอใหญ่ทันที!</p>
+        <input type="text" id="msgInput" placeholder="พิมพ์ข้อความที่นี่..." maxlength="40">
+        <button id="sendBtn">ส่งขึ้นจอ 🚀</button>
+    </div>
+
+    <script type="module">
+        // Import Firebase v12.7.0
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+        // Config เดียวกัน
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
+            authDomain: "newyearwish-6006d.firebaseapp.com",
+            databaseURL: "https://newyearwish-6006d-default-rtdb.firebaseio.com",
+            projectId: "newyearwish-6006d",
+            storageBucket: "newyearwish-6006d.firebasestorage.app",
+            messagingSenderId: "2243087360",
+            appId: "1:2243087360:web:8b6d73f67ea1488b12dce5",
+            measurementId: "G-5TV5JZPWLV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        
+        // รองรับการกด Enter
+        document.getElementById('msgInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const msg = input.value.trim();
+            
+            if(msg) {
+                const newWishRef = push(ref(db, 'wishes'));
+                set(newWishRef, {
+                    message: msg,
+                    timestamp: Date.now()
+                }).then(() => {
+                    alert("ส่งเรียบร้อย! มองไปที่จอได้เลย");
+                    input.value = '';
+                }).catch((error) => {
+                    console.error("Error sending wish:", error);
+                    alert("ส่งไม่สำเร็จ กรุณาลองใหม่");
+                });
+            }
+        }
+    </script>
+</body>
+</html>
