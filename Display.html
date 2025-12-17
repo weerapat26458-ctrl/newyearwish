@@ -3,218 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Year Wish Display (Final)</title>
+    <title>New Year Wishes Wall</title>
     <style>
-        /* Import ฟอนต์ปกติ (Kanit) และฟอนต์คริสต์มาส (Mountains of Christmas) */
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&family=Mountains+of+Christmas:wght@700&display=swap');
-
-        body { margin: 0; overflow: hidden; background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); font-family: 'Kanit', sans-serif; color: white; height: 100vh; position: relative; }
-        
-        /* --- CSS ฉากหลัง --- */
-        .scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .moon { position: absolute; top: 50px; right: 50px; width: 80px; height: 80px; background: #fdfcdc; border-radius: 50%; box-shadow: 0 0 40px #fdfcdc, 0 0 80px #ffffff; }
-        .hill { position: absolute; bottom: -50px; width: 100%; height: 200px; background: #eef2f3; border-radius: 100% 100% 0 0; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .hill-1 { left: -20%; width: 140%; height: 250px; z-index: 1; opacity: 0.9; }
-        .hill-2 { left: 20%; width: 120%; height: 180px; z-index: 2; opacity: 1; background: #fff; }
-        .tree { position: absolute; bottom: 120px; width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 60px solid #1a4c44; z-index: 1; }
-        .tree::after { content: ''; position: absolute; top: 20px; left: -15px; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 45px solid rgba(255,255,255,0.2); }
-        .t1 { left: 10%; bottom: 180px; transform: scale(1.5); }
-        .t2 { left: 15%; bottom: 150px; transform: scale(1.2); }
-        .t3 { right: 15%; bottom: 140px; transform: scale(2); }
-        .t4 { right: 5%; bottom: 160px; transform: scale(1.3); }
-
-        /* --- ❄️ หิมะตก --- */
-        .snow-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            pointer-events: none; z-index: 20; opacity: 0.8;
-            background-image: 
-                radial-gradient(3px 3px at 100px 50px, #fff, transparent),
-                radial-gradient(4px 4px at 200px 150px, #fff, transparent),
-                radial-gradient(3px 3px at 300px 250px, #fff, transparent),
-                radial-gradient(4px 4px at 400px 350px, #fff, transparent),
-                radial-gradient(5px 5px at 500px 100px, #fff, transparent),
-                radial-gradient(3px 3px at 600px 400px, #fff, transparent),
-                radial-gradient(4px 4px at 800px 500px, #fff, transparent),
-                radial-gradient(3px 3px at 50px 550px, #fff, transparent);
-            background-size: 550px 550px; animation: snowFall 5s linear infinite;
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            font-family: 'Sarabun', sans-serif; /* แนะนำให้หา Font น่ารักๆ มาใส่ */
+            color: white;
+            height: 100vh;
         }
-        .snow-layer::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(4px 4px at 50px 50px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(5px 5px at 150px 250px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(3px 3px at 350px 150px, rgba(255,255,255,0.8), transparent);
-            background-size: 400px 400px; animation: snowFall 10s linear infinite reverse; opacity: 0.6;
+
+        /* กล่องควบคุมด้านล่าง (ส่วนที่ให้คนพิมพ์) */
+        .input-area {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            gap: 10px;
+            width: 90%;
+            max-width: 500px;
         }
-        @keyframes snowFall { 0% { background-position: 0 0; } 100% { background-position: 50px 500px; } }
 
-        #sky-container { position: relative; width: 100%; height: 100vh; z-index: 10; pointer-events: none; }
+        input {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
 
-        /* --- 🎅 HEADER ใหม่ตรงกลาง --- */
-        .main-header {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 100; text-align: center; width: 100%;
+        button {
+            padding: 10px 25px;
+            border-radius: 20px;
+            border: none;
+            background: #ff4757;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff6b81;
+            transform: scale(1.05);
+        }
+
+        /* สไตล์ของข้อความที่ลอย */
+        .wish-bubble {
+            position: absolute;
+            bottom: -100px; /* เริ่มต้นจากใต้จอ */
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            animation: floatUp linear forwards; /* เรียกใช้ Animation */
+        }
+
+        /* ตกแต่งเพิ่ม: หางลูกโป่ง หรือ แสงวิบวับ */
+        .wish-bubble::after {
+            content: '🎈'; /* ใส่ icon ต่อท้าย */
+            position: absolute;
+            top: -25px;
+            right: -10px;
+            font-size: 24px;
+        }
+
+        /* Keyframes การเคลื่อนไหว */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-5vh) scale(1);
+            }
+            100% {
+                transform: translateY(-120vh); /* ลอยทะลุจอไปเลย */
+                opacity: 0.8;
+            }
+        }
+
+        /* หิมะตกเบาๆ (Optional) */
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
+            background-image: url('https://library.kissclipart.com/20180831/qcw/kissclipart-falling-snow-png-clipart-snow-clip-art-7f55e51020253456.png'); 
+            opacity: 0.3;
+            animation: snowFall 20s linear infinite;
         }
-        .main-header h1 {
-            font-family: 'Mountains of Christmas', cursive;
-            font-size: 4rem; margin: 0;
-            color: #d32f2f;
-            text-shadow: 
-                3px 3px 0px #fff, 
-                0 0 20px #ffd700,
-                0 0 40px #ff6f00;
-            letter-spacing: 2px;
-            animation: textGlow 2s ease-in-out infinite alternate;
-        }
-        .main-header p {
-            font-family: 'Mountains of Christmas', cursive;
-            font-size: 1.5rem; color: #ffeb3b; margin: -10px 0 0 0;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
-        }
+        @keyframes snowFall { 100% { background-position: 0 500px; } }
 
-        @keyframes textGlow {
-            from { text-shadow: 3px 3px 0 #fff, 0 0 10px #ffd700; transform: scale(1); }
-            to { text-shadow: 3px 3px 0 #fff, 0 0 30px #ffea00, 0 0 50px #ffeb3b; transform: scale(1.02); }
-        }
-
-        /* --- สไตล์ข้อความอวยพร --- */
-        .wish-item {
-            position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center;
-            opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto;
-        }
-        .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
-        .wish-icon { font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); animation: swing 3s ease-in-out infinite; }
-        @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
-        .wish-text {
-            background: rgba(255, 255, 255, 0.95); color: #333; 
-            padding: 8px 20px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; 
-            margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            max-width: 250px; word-wrap: break-word; border: 3px solid transparent;
-        }
-
-        /* --- Keyframes --- */
-        @keyframes floatNormal { 0% { transform: translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } }
-        @keyframes floatZigzag { 0% { transform: translateX(0) translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 25% { transform: translateX(30px) translateY(-30vh) scale(1); } 50% { transform: translateX(-30px) translateY(-60vh) scale(1); } 75% { transform: translateX(30px) translateY(-90vh) scale(1); } 100% { transform: translateX(0) translateY(-130vh) scale(1); opacity: 0.9; } }
-        @keyframes floatWobble { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 33% { transform: translateX(-20px) translateY(-40vh) rotate(-5deg); } 66% { transform: translateX(20px) translateY(-80vh) rotate(5deg); } 100% { transform: translateX(0) translateY(-130vh) rotate(0deg); opacity: 0.9; } }
-
-        .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
-
-        .qr-zone { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .qr-zone h3 { margin: 0; font-size: 1rem; color: #fdfcdc; text-shadow: 0 0 5px #ffeb3b; }
-        .qr-img-box { width: 140px; height: 140px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .qr-img-box img { width: 100%; height: 100%; object-fit: contain; }
     </style>
 </head>
 <body>
-    <div class="scene">
-        <div class="moon"></div>
-        <div class="hill hill-1"></div>
-        <div class="hill hill-2"></div>
-        <div class="tree t1"></div>
-        <div class="tree t2"></div>
-        <div class="tree t3"></div>
-        <div class="tree t4"></div>
-    </div>
-    
-    <div class="main-header">
-        <h1>SDU Merry Christmas</h1>
-        <p>& Happy New Year 2026</p>
+
+    <div class="snow"></div>
+
+    <div class="input-area">
+        <input type="text" id="wishInput" placeholder="พิมพ์คำอวยพร แล้วกดส่ง..." maxlength="50">
+        <button onclick="sendWish()">ส่งคำอวยพร</button>
     </div>
 
-    <div class="snow-layer"></div>
-    <div id="sky-container"></div>
-    <div class="pool-status" id="poolCount">Memories: 0</div>
+    <script>
+        function sendWish() {
+            const input = document.getElementById('wishInput');
+            const text = input.value.trim();
 
-    <div class="qr-zone">
-        <h3>🎁 สแกนเพื่อส่งคำอวยพร</h3>
-        <div class="qr-img-box">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://weerapat26458-ctrl.github.io/new-year-wish/Sender.html" alt="Scan Me">
-        </div>
-    </div>
-
-    <script type="module">
-        // ✅ แก้ไขเวอร์ชัน Firebase เป็น 11.0.2 (เวอร์ชันปัจจุบันที่เสถียร)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getDatabase, ref, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
-
-        // ✅ Config นี้เป็นชุดเดียวกับที่คุณส่งมาตอนแรก (ถ้าคุณสร้าง Project ใหม่แล้ว ให้เอา Key ใหม่มาแปะทับตรงนี้นะครับ)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
-            authDomain: "newyearwish-6006d.firebaseapp.com",
-            databaseURL: "https://newyearwish-6006d-default-rtdb.firebaseio.com",
-            projectId: "newyearwish-6006d",
-            storageBucket: "newyearwish-6006d.firebasestorage.app",
-            messagingSenderId: "2243087360",
-            appId: "1:2243087360:web:8b6d73f67ea1488b12dce5",
-            measurementId: "G-5TV5JZPWLV"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const wishesRef = ref(db, 'wishes');
-
-        const container = document.getElementById('sky-container');
-        const poolCountLabel = document.getElementById('poolCount');
-        const icons = ['🎅', '🎄', '🎁', '⛄', '❄️', '🦌', '🔔', '🌟', '🧦', '🐧', '🍪', '🥂'];
-        let messagePool = [ "Happy New Year!", "สวัสดีปีใหม่ 2569", "ขอให้รวยๆ", "Merry Christmas", "โชคดีตลอดปี" ];
-        
-        updatePoolCount();
-
-        const colorThemes = [
-            { name: "XmasRed", bg: "rgba(255, 235, 238, 0.95)", border: "#ff1744", text: "#b71c1c" },
-            { name: "PineGreen", bg: "rgba(232, 245, 233, 0.95)", border: "#00e676", text: "#1b5e20" },
-            { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", border: "#ffea00", text: "#f57f17" },
-            { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", border: "#2979ff", text: "#0d47a1" }
-        ];
-
-        const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
-
-        function createFloatingItem(text) {
-            const el = document.createElement('div');
-            el.classList.add('wish-item');
-            const iconChar = icons[Math.floor(Math.random() * icons.length)];
-            const theme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
-
-            el.innerHTML = `<div class="wish-icon">${iconChar}</div><div class="wish-text">${text}</div>`;
-            
-            const textBox = el.querySelector('.wish-text');
-            textBox.style.backgroundColor = theme.bg;
-            textBox.style.borderColor = theme.border;
-            textBox.style.color = theme.text;
-
-            el.style.left = (Math.floor(Math.random() * 85) + 5) + '%';
-            const duration = Math.floor(Math.random() * 8) + 12; 
-            const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
-            el.style.animation = `${animType} ${duration}s linear forwards`;
-            el.style.transform = `scale(${(Math.random() * 0.4) + 0.8})`;
-
-            container.appendChild(el);
-            setTimeout(() => { el.remove(); }, duration * 1000);
+            if (text !== "") {
+                createFloatingWish(text);
+                input.value = ""; // เคลียร์ช่องพิมพ์
+                input.focus();
+            }
         }
 
-        function updatePoolCount() { poolCountLabel.innerText = `Memories: ${messagePool.length}`; }
+        function createFloatingWish(message) {
+            const wish = document.createElement('div');
+            wish.classList.add('wish-bubble');
+            wish.innerText = message;
 
-        onChildAdded(wishesRef, (snapshot) => {
-            const data = snapshot.val();
-            if(data && data.message) {
-                createFloatingItem(data.message);
-                if (!messagePool.includes(data.message)) {
-                    messagePool.push(data.message);
-                    updatePoolCount();
-                }
+            // สุ่มตำแหน่งแนวนอน (Left) 5% ถึง 90% ของหน้าจอ
+            const randomLeft = Math.floor(Math.random() * 85) + 5;
+            wish.style.left = randomLeft + '%';
+
+            // สุ่มความเร็วในการลอย (5 - 10 วินาที)
+            const randomDuration = Math.floor(Math.random() * 5) + 10; 
+            wish.style.animationDuration = randomDuration + 's';
+
+            // สุ่มขนาดเล็กใหญ่ (0.8 - 1.2 เท่า)
+            const randomScale = (Math.random() * 0.4) + 0.8;
+            wish.style.transform = `scale(${randomScale})`;
+
+            document.body.appendChild(wish);
+
+            // ลบ Element ทิ้งเมื่อลอยพ้นจอไปแล้ว (เพื่อไม่ให้หนักเครื่อง)
+            setTimeout(() => {
+                wish.remove();
+            }, randomDuration * 1000);
+        }
+
+        // กด Enter เพื่อส่งได้ด้วย
+        document.getElementById('wishInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendWish();
             }
         });
-
-        setInterval(() => {
-            const currentItems = document.querySelectorAll('.wish-item');
-            const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
-            const candidates = messagePool.filter(text => !onScreenTexts.includes(text));
-            if (currentItems.length < 8 && candidates.length > 0) {
-                createFloatingItem(candidates[Math.floor(Math.random() * candidates.length)]);
-            }
-        }, 1500);
     </script>
 </body>
 </html>
-

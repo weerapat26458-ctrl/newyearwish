@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ส่งคำอวยพร</title>
     <style>
-        body { font-family: 'Sarabun', sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&display=swap');
+        body { font-family: 'Kanit', sans-serif; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 20px; width: 80%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         h1 { color: #ff6b81; margin-top: 0; }
-        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: #ff6b81; }
         button { width: 100%; padding: 15px; border: none; background: #ff6b81; color: white; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; }
         button:active { transform: scale(0.95); }
+        p { color: #666; }
     </style>
 </head>
 <body>
@@ -22,11 +25,11 @@
     </div>
 
     <script type="module">
-        // Import Firebase v12.7.0
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+        // ✅ ใช้ Firebase v11.0.2 (เวอร์ชันที่ถูกต้อง)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-        // Config เดียวกัน
+        // Config ของคุณ (ถูกต้องแล้ว)
         const firebaseConfig = {
             apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
             authDomain: "newyearwish-6006d.firebaseapp.com",
@@ -51,21 +54,9 @@
         function sendMessage() {
             const input = document.getElementById('msgInput');
             const msg = input.value.trim();
+            const btn = document.getElementById('sendBtn');
             
             if(msg) {
-                const newWishRef = push(ref(db, 'wishes'));
-                set(newWishRef, {
-                    message: msg,
-                    timestamp: Date.now()
-                }).then(() => {
-                    alert("ส่งเรียบร้อย! มองไปที่จอได้เลย");
-                    input.value = '';
-                }).catch((error) => {
-                    console.error("Error sending wish:", error);
-                    alert("ส่งไม่สำเร็จ กรุณาลองใหม่");
-                });
-            }
-        }
-    </script>
-</body>
-</html>
+                // เปลี่ยนข้อความปุ่มให้รู้ว่ากำลังส่ง
+                btn.innerText = "กำลังส่ง...";
+                btn.disabled =
