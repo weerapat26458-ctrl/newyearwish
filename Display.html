@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Year Wish Display (Final)</title>
+    <title>New Year Wish Display (SDU Glowing Fireworks)</title>
     <style>
-        /* Import ฟอนต์ปกติ (Kanit) และฟอนต์คริสต์มาส (Mountains of Christmas) */
+        /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&family=Mountains+of+Christmas:wght@700&display=swap');
 
         body { margin: 0; overflow: hidden; background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); font-family: 'Kanit', sans-serif; color: white; height: 100vh; position: relative; }
@@ -22,6 +22,18 @@
         .t2 { left: 15%; bottom: 150px; transform: scale(1.2); }
         .t3 { right: 15%; bottom: 140px; transform: scale(2); }
         .t4 { right: 5%; bottom: 160px; transform: scale(1.3); }
+
+        /* --- 🎆 SDU Fireworks Canvas --- */
+        #fireworks-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5; /* อยู่หน้าภูเขา แต่อยู่หลังหิมะและข้อความ */
+            pointer-events: none;
+            /* filter: blur(1px); เพิ่มความฟุ้งเล็กน้อย */
+        }
 
         /* --- ❄️ หิมะตก --- */
         .snow-layer {
@@ -50,29 +62,35 @@
 
         #sky-container { position: relative; width: 100%; height: 100vh; z-index: 10; pointer-events: none; }
 
-        /* --- 🎅 HEADER ใหม่ตรงกลาง --- */
+        /* --- 🎅 HEADER --- */
         .main-header {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 100; text-align: center; width: 100%;
-            pointer-events: none; /* เพื่อให้เมาส์คลิกทะลุไปโดนลูกโป่งข้างหลังได้ */
+            position: fixed; 
+            top: 40px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            z-index: 100; 
+            text-align: center; 
+            width: 100%;
+            pointer-events: none;
         }
         .main-header h1 {
-            font-family: 'Mountains of Christmas', cursive; /* ฟอนต์คริสต์มาส */
-            font-size: 4rem; margin: 0;
-            color: #d32f2f; /* สีแดงคริสต์มาส */
-            text-shadow: 
-                3px 3px 0px #fff, 
-                0 0 20px #ffd700, /* เรืองแสงสีทอง */
-                0 0 40px #ff6f00;
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 5rem; 
+            margin: 0;
+            line-height: 1; 
+            color: #d32f2f;
+            text-shadow: 3px 3px 0px #fff, 0 0 20px #ffd700, 0 0 40px #ff6f00;
             letter-spacing: 2px;
             animation: textGlow 2s ease-in-out infinite alternate;
         }
         .main-header p {
             font-family: 'Mountains of Christmas', cursive;
-            font-size: 1.5rem; color: #ffeb3b; margin: -10px 0 0 0;
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+            font-size: 3.2rem; 
+            color: #ffeb3b; 
+            margin: 15px 0 0 0; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); 
+            letter-spacing: 1px;
         }
-
         @keyframes textGlow {
             from { text-shadow: 3px 3px 0 #fff, 0 0 10px #ffd700; transform: scale(1); }
             to { text-shadow: 3px 3px 0 #fff, 0 0 30px #ffea00, 0 0 50px #ffeb3b; transform: scale(1.02); }
@@ -108,6 +126,7 @@
 </head>
 <body>
     <div class="scene">
+        <canvas id="fireworks-canvas"></canvas>
         <div class="moon"></div>
         <div class="hill hill-1"></div>
         <div class="hill hill-2"></div>
@@ -118,7 +137,7 @@
     </div>
     
     <div class="main-header">
-        <h1>SDU Merry Christmas</h1>
+        <h1>Merry Christmas</h1>
         <p>& Happy New Year 2026</p>
     </div>
 
@@ -134,7 +153,6 @@
     </div>
 
     <script type="module">
-        // ✅ เปลี่ยนเป็นเวอร์ชัน 11.0.2 ให้ใช้งานได้จริง
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getDatabase, ref, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
@@ -153,21 +171,20 @@
         const db = getDatabase(app);
         const wishesRef = ref(db, 'wishes');
 
+        // --- ส่วนจัดการข้อความลอย (Floating Wishes) ---
         const container = document.getElementById('sky-container');
         const poolCountLabel = document.getElementById('poolCount');
         const icons = ['🎅', '🎄', '🎁', '⛄', '❄️', '🦌', '🔔', '🌟', '🧦', '🐧', '🍪', '🥂'];
         let messagePool = [ "Happy New Year!", "สวัสดีปีใหม่ 2569", "ขอให้รวยๆ", "Merry Christmas", "โชคดีตลอดปี" ];
-        
-        updatePoolCount();
-
         const colorThemes = [
             { name: "XmasRed", bg: "rgba(255, 235, 238, 0.95)", border: "#ff1744", text: "#b71c1c" },
             { name: "PineGreen", bg: "rgba(232, 245, 233, 0.95)", border: "#00e676", text: "#1b5e20" },
             { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", border: "#ffea00", text: "#f57f17" },
             { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", border: "#2979ff", text: "#0d47a1" }
         ];
-
         const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
+
+        function updatePoolCount() { poolCountLabel.innerText = `Memories: ${messagePool.length}`; }
 
         function createFloatingItem(text) {
             const el = document.createElement('div');
@@ -176,7 +193,6 @@
             const theme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
 
             el.innerHTML = `<div class="wish-icon">${iconChar}</div><div class="wish-text">${text}</div>`;
-            
             const textBox = el.querySelector('.wish-text');
             textBox.style.backgroundColor = theme.bg;
             textBox.style.borderColor = theme.border;
@@ -191,8 +207,6 @@
             container.appendChild(el);
             setTimeout(() => { el.remove(); }, duration * 1000);
         }
-
-        function updatePoolCount() { poolCountLabel.innerText = `Memories: ${messagePool.length}`; }
 
         onChildAdded(wishesRef, (snapshot) => {
             const data = snapshot.val();
@@ -213,6 +227,220 @@
                 createFloatingItem(candidates[Math.floor(Math.random() * candidates.length)]);
             }
         }, 1500);
+
+        // =========================================
+        // --- 🎆 ส่วนจัดการพลุ (Fireworks Logic) ---
+        // =========================================
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        
+        // Arrays สำหรับเก็บพลุชนิดต่างๆ
+        let sduParticles = [];
+        let sduRocket = null;
+        let sduPoints = [];
+
+        let standardRockets = [];
+        let standardParticles = [];
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            calculateSDUPoints();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // --- คำนวณจุด SDU ---
+        function calculateSDUPoints() {
+            const tempCanvas = document.createElement('canvas');
+            const tCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            tCtx.font = "bold 150px 'Kanit', sans-serif";
+            tCtx.fillStyle = "white";
+            tCtx.textAlign = "center";
+            tCtx.textBaseline = "middle";
+            tCtx.fillText("SDU", width / 2, height / 3); 
+            const imageData = tCtx.getImageData(0, 0, width, height).data;
+            sduPoints = [];
+            const gap = 4; 
+            for (let y = 0; y < height; y += gap) {
+                for (let x = 0; x < width; x += gap) {
+                    if (imageData[(y * width + x) * 4 + 3] > 128) {
+                        sduPoints.push({ x: x, y: y });
+                    }
+                }
+            }
+        }
+
+        // --- Class: SDU Rocket (จรวดหลักตรงกลาง) ---
+        class SDURocket {
+            constructor() {
+                this.x = width / 2;
+                this.y = height;
+                this.vy = -13;
+                this.color = '#fff';
+                this.exploded = false;
+            }
+            update() {
+                this.y += this.vy;
+                if (this.y < height / 3 + 50) { 
+                    this.exploded = true;
+                    explodeSDU();
+                }
+            }
+            draw() {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // --- Class: SDU Particle (เม็ดสี SDU เรืองแสง) ---
+        class SDUParticle {
+            constructor(targetX, targetY) {
+                this.x = width / 2;
+                this.y = height / 3 + 50;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.speed = Math.random() * 0.06 + 0.03; 
+                this.alpha = 1;
+                // ✅ สีสันหลากหลาย (Full Spectrum)
+                this.hue = Math.random() * 360;
+                this.color = `hsl(${this.hue}, 100%, 60%)`;
+            }
+            update() {
+                this.x += (this.targetX - this.x) * this.speed;
+                this.y += (this.targetY - this.y) * this.speed;
+                // ✅ จางหายแบบมีประกายเล็กน้อย
+                this.alpha -= (Math.random() * 0.01 + 0.002);
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                // ✅ เพิ่มการเรืองแสง (Glow Effect)
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.fillStyle = this.color;
+                // วาดจุดให้ใหญ่ขึ้นเล็กน้อยเพื่อให้เห็น Glow ชัดเจน
+                ctx.fillRect(this.x - 1, this.y - 1, 3, 3);
+                // Reset เงาเพื่อไม่ให้กระทบตัวอื่นมากเกินไป (Performance)
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function explodeSDU() {
+            const totalParticles = 800;
+            for(let i=0; i<totalParticles; i++) {
+                if(sduPoints.length > 0) {
+                    const pt = sduPoints[Math.floor(Math.random() * sduPoints.length)];
+                    sduParticles.push(new SDUParticle(pt.x, pt.y));
+                }
+            }
+        }
+
+        // --- Class: Standard Rocket (จรวดข้างซ้าย/ขวา) ---
+        class StandardRocket {
+            constructor(side) {
+                // สุ่มตำแหน่งเริ่ม ซ้ายสุด หรือ ขวาสุด
+                this.x = side === 'left' ? width * 0.1 + Math.random() * width * 0.1 : width * 0.8 + Math.random() * width * 0.1;
+                this.y = height;
+                this.vy = -(Math.random() * 3 + 10); // ความเร็วสุ่ม
+                this.targetY = height * 0.2 + Math.random() * height * 0.3; // จุดระเบิดสุ่มความสูง
+                this.hue = Math.random() * 360;
+                this.exploded = false;
+            }
+            update() {
+                this.y += this.vy;
+                this.vy += 0.05; // แรงโน้มถ่วงเล็กน้อย
+                if (this.vy >= 0 || this.y <= this.targetY) {
+                    this.exploded = true;
+                    explodeStandard(this.x, this.y, this.hue);
+                }
+            }
+            draw() {
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        // --- Class: Standard Particle (เม็ดสีพลุธรรมดา) ---
+        class StandardParticle {
+            constructor(x, y, hue) {
+                this.x = x; this.y = y;
+                // แตกออกเป็นวงกลม
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 1;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.05;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.005;
+                this.hue = hue + (Math.random() * 40 - 20); // สีใกล้เคียงกัน
+            }
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function explodeStandard(x, y, hue) {
+            for (let i = 0; i < 100; i++) {
+                standardParticles.push(new StandardParticle(x, y, hue));
+            }
+        }
+
+        // --- Main Animation Loop ---
+        function loop() {
+            requestAnimationFrame(loop);
+            // ใช้ clearRect เพื่อให้ฉากหลังชัดเจน (ถ้าต้องการหาง ให้ใช้ fillRect สีดำจางๆ แทน)
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. จัดการพลุ SDU
+            if (!sduRocket && Math.random() < 0.005) { // โอกาสเกิด SDU Rocket น้อยๆ
+                sduRocket = new SDURocket();
+            }
+            if (sduRocket) {
+                sduRocket.update();
+                if (!sduRocket.exploded) sduRocket.draw();
+                else sduRocket = null;
+            }
+            for (let i = sduParticles.length - 1; i >= 0; i--) {
+                sduParticles[i].update();
+                sduParticles[i].draw();
+                if (sduParticles[i].alpha <= 0) sduParticles.splice(i, 1);
+            }
+
+            // 2. จัดการพลุธรรมดา (ซ้าย/ขวา)
+            if (Math.random() < 0.02) { // โอกาสเกิดพลุข้างๆ บ่อยกว่า SDU นิดหน่อย
+                const side = Math.random() < 0.5 ? 'left' : 'right';
+                standardRockets.push(new StandardRocket(side));
+            }
+            for (let i = standardRockets.length - 1; i >= 0; i--) {
+                standardRockets[i].update();
+                standardRockets[i].draw();
+                if (standardRockets[i].exploded) standardRockets.splice(i, 1);
+            }
+            for (let i = standardParticles.length - 1; i >= 0; i--) {
+                standardParticles[i].update();
+                standardParticles[i].draw();
+                if (standardParticles[i].alpha <= 0) standardParticles.splice(i, 1);
+            }
+        }
+
+        loop();
+
     </script>
 </body>
 </html>
