@@ -25,11 +25,11 @@
     </div>
 
     <script type="module">
-        // ✅ ใช้ Firebase v11.0.2 (เวอร์ชันที่ถูกต้อง)
+        // ✅ 1. แก้ไข Import ให้เป็นลิงก์เว็บ (CDN) เพื่อให้ทำงานบน Browser ได้
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-        // Config ของคุณ (ถูกต้องแล้ว)
+        // ✅ 2. ค่า Config ของคุณ (ถูกต้องแล้วครับ!)
         const firebaseConfig = {
             apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
             authDomain: "newyearwish-6006d.firebaseapp.com",
@@ -41,9 +41,11 @@
             measurementId: "G-5TV5JZPWLV"
         };
 
+        // 3. เริ่มต้นระบบ Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // 4. ฟังก์ชันส่งข้อความ
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
         
         // รองรับการกด Enter
@@ -57,6 +59,25 @@
             const btn = document.getElementById('sendBtn');
             
             if(msg) {
-                // เปลี่ยนข้อความปุ่มให้รู้ว่ากำลังส่ง
                 btn.innerText = "กำลังส่ง...";
-                btn.disabled =
+                btn.disabled = true;
+
+                // ส่งข้อมูลไปที่ 'wishes' ใน Database
+                const newWishRef = push(ref(db, 'wishes'));
+                set(newWishRef, {
+                    message: msg,
+                    timestamp: Date.now()
+                }).then(() => {
+                    alert("ส่งเรียบร้อย! มองไปที่จอได้เลย");
+                    input.value = '';
+                    btn.innerText = "ส่งขึ้นจอ 🚀";
+                    btn.disabled = false;
+                }).catch((error) => {
+                    console.error("Error sending wish:", error);
+                    alert("ส่งไม่สำเร็จ กรุณาลองใหม่");
+                    btn.innerText = "ส่งขึ้นจอ 🚀";
+                    btn.disabled = false;
+                });
+            }
+        }
+    </script>
