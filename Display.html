@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year Wishes Wall</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            font-family: 'Sarabun', sans-serif; /* แนะนำให้หา Font น่ารักๆ มาใส่ */
+            color: white;
+            height: 100vh;
+        }
+
+        /* กล่องควบคุมด้านล่าง (ส่วนที่ให้คนพิมพ์) */
+        .input-area {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            gap: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 25px;
+            border-radius: 20px;
+            border: none;
+            background: #ff4757;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff6b81;
+            transform: scale(1.05);
+        }
+
+        /* สไตล์ของข้อความที่ลอย */
+        .wish-bubble {
+            position: absolute;
+            bottom: -100px; /* เริ่มต้นจากใต้จอ */
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            animation: floatUp linear forwards; /* เรียกใช้ Animation */
+        }
+
+        /* ตกแต่งเพิ่ม: หางลูกโป่ง หรือ แสงวิบวับ */
+        .wish-bubble::after {
+            content: '🎈'; /* ใส่ icon ต่อท้าย */
+            position: absolute;
+            top: -25px;
+            right: -10px;
+            font-size: 24px;
+        }
+
+        /* Keyframes การเคลื่อนไหว */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(-5vh) scale(1);
+            }
+            100% {
+                transform: translateY(-120vh); /* ลอยทะลุจอไปเลย */
+                opacity: 0.8;
+            }
+        }
+
+        /* หิมะตกเบาๆ (Optional) */
+        .snow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: url('https://library.kissclipart.com/20180831/qcw/kissclipart-falling-snow-png-clipart-snow-clip-art-7f55e51020253456.png'); 
+            opacity: 0.3;
+            animation: snowFall 20s linear infinite;
+        }
+        @keyframes snowFall { 100% { background-position: 0 500px; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="snow"></div>
+
+    <div class="input-area">
+        <input type="text" id="wishInput" placeholder="พิมพ์คำอวยพร แล้วกดส่ง..." maxlength="50">
+        <button onclick="sendWish()">ส่งคำอวยพร</button>
+    </div>
+
+    <script>
+        function sendWish() {
+            const input = document.getElementById('wishInput');
+            const text = input.value.trim();
+
+            if (text !== "") {
+                createFloatingWish(text);
+                input.value = ""; // เคลียร์ช่องพิมพ์
+                input.focus();
+            }
+        }
+
+        function createFloatingWish(message) {
+            const wish = document.createElement('div');
+            wish.classList.add('wish-bubble');
+            wish.innerText = message;
+
+            // สุ่มตำแหน่งแนวนอน (Left) 5% ถึง 90% ของหน้าจอ
+            const randomLeft = Math.floor(Math.random() * 85) + 5;
+            wish.style.left = randomLeft + '%';
+
+            // สุ่มความเร็วในการลอย (5 - 10 วินาที)
+            const randomDuration = Math.floor(Math.random() * 5) + 10; 
+            wish.style.animationDuration = randomDuration + 's';
+
+            // สุ่มขนาดเล็กใหญ่ (0.8 - 1.2 เท่า)
+            const randomScale = (Math.random() * 0.4) + 0.8;
+            wish.style.transform = `scale(${randomScale})`;
+
+            document.body.appendChild(wish);
+
+            // ลบ Element ทิ้งเมื่อลอยพ้นจอไปแล้ว (เพื่อไม่ให้หนักเครื่อง)
+            setTimeout(() => {
+                wish.remove();
+            }, randomDuration * 1000);
+        }
+
+        // กด Enter เพื่อส่งได้ด้วย
+        document.getElementById('wishInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendWish();
+            }
+        });
+    </script>
+</body>
+</html>
