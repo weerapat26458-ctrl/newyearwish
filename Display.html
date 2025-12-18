@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes with OWL (Queue System)</title>
+    <title>AI Event: Wishes (No Overlap)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -67,9 +67,10 @@
 
         /* --- ✨ Wish Items ✨ --- */
         .wish-item { 
-            position: absolute; bottom: -150px; 
+            position: absolute; bottom: -180px; /* เริ่มต่ำลงหน่อย */
             display: flex; flex-direction: column; align-items: center; 
             opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; 
+            width: 18%; /* บังคับความกว้างให้พอดีเลน */
         }
         .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
         
@@ -82,13 +83,13 @@
         .wish-text {
             background: rgba(255, 255, 255, 0.95); 
             color: #333; 
-            padding: 12px 25px; 
+            padding: 12px 20px; 
             border-radius: 20px; 
-            font-size: 1.6rem; 
+            font-size: 1.5rem; 
             font-weight: 800; 
             margin-top: 5px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
-            max-width: 320px; 
+            width: 100%; /* เต็มความกว้าง Container */
             word-wrap: break-word; 
             border: 5px dotted #ff0000; 
             animation: xmasLights 1.5s infinite linear; 
@@ -97,9 +98,18 @@
         @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
         @keyframes xmasLights { 0% { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 33% { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 66% { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } }
         
-        @keyframes floatNormal { 0% { transform: translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } }
-        @keyframes floatZigzag { 0% { transform: translateX(0) translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 25% { transform: translateX(30px) translateY(-30vh) scale(1); } 50% { transform: translateX(-30px) translateY(-60vh) scale(1); } 75% { transform: translateX(30px) translateY(-90vh) scale(1); } 100% { transform: translateX(0) translateY(-130vh) scale(1); opacity: 0.9; } }
-        @keyframes floatWobble { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 33% { transform: translateX(-20px) translateY(-40vh) rotate(-5deg); } 66% { transform: translateX(20px) translateY(-80vh) rotate(5deg); } 100% { transform: translateX(0) translateY(-130vh) rotate(0deg); opacity: 0.9; } }
+        /* ปรับ Animation ให้ลอยตรงๆ ไม่ส่ายไปโดนเพื่อน */
+        @keyframes floatStraight { 
+            0% { transform: translateY(0) scale(1); opacity: 0; } 
+            5% { opacity: 1; } 
+            100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } 
+        }
+        @keyframes floatGentle { 
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; } 
+            5% { opacity: 1; } 
+            50% { transform: translateY(-65vh) rotate(2deg); } 
+            100% { transform: translateY(-130vh) rotate(-2deg); opacity: 0.9; } 
+        }
 
         .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
         
@@ -173,9 +183,16 @@
             { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", text: "#f57f17" },
             { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", text: "#0d47a1" }
         ];
-        const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
+        
+        // ใช้แค่การลอยขึ้นตรงๆ หรือเอียงนิดเดียว เพื่อไม่ให้ไปชนเลนอื่น
+        const animationTypes = ['floatStraight', 'floatGentle'];
 
-        // --- คิวสำหรับรอแสดงผล ---
+        // --- ระบบ Lane (ป้องกันการทับกัน) ---
+        // แบ่งหน้าจอเป็น 5 เลน (ตำแหน่ง left %)
+        const lanePositions = [5, 25, 45, 65, 85]; 
+        // เก็บเวลาล่าสุดที่เลนนั้นถูกใช้งาน
+        let laneLastUsed = [0, 0, 0, 0, 0]; 
+
         let displayQueue = []; 
 
         const badWords = [
@@ -192,7 +209,23 @@
 
         function updatePoolCount() { poolCountLabel.innerText = `Memories: ${messagePool.length}`; }
 
-        function createFloatingItem(text) {
+        function getAvailableLane() {
+            const now = Date.now();
+            const cooldown = 5000; // ต้องเว้นระยะห่าง 5 วินาที ในเลนเดิม
+            
+            // หาเลนที่เวลาผ่านไปนานพอแล้ว
+            const freeLanes = lanePositions
+                .map((pos, index) => ({ index, pos }))
+                .filter(item => now - laneLastUsed[item.index] > cooldown);
+
+            if (freeLanes.length === 0) return -1; // เต็มทุกเลน
+
+            // สุ่มเลือกเลนที่ว่าง
+            const chosen = freeLanes[Math.floor(Math.random() * freeLanes.length)];
+            return chosen.index;
+        }
+
+        function createFloatingItem(text, laneIndex) {
             const el = document.createElement('div');
             el.classList.add('wish-item');
             const iconChar = icons[Math.floor(Math.random() * icons.length)];
@@ -202,16 +235,18 @@
             const textBox = el.querySelector('.wish-text');
             textBox.style.backgroundColor = theme.bg;
             textBox.style.color = theme.text;
-            textBox.style.animationDelay = Math.random() + 's';
+            
+            // กำหนดตำแหน่งตามเลนที่เลือกมา
+            el.style.left = lanePositions[laneIndex] + '%';
+            
+            // บันทึกเวลาว่าเลนนี้เพิ่งใช้ไป
+            laneLastUsed[laneIndex] = Date.now();
 
-            el.style.left = (Math.floor(Math.random() * 85) + 5) + '%';
-            
-            // ความเร็วเท่าเดิม
-            const duration = Math.floor(Math.random() * 15) + 25; 
-            
+            const duration = Math.floor(Math.random() * 10) + 25; // 25-35 วินาที
             const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+            
             el.style.animation = `${animType} ${duration}s linear forwards`;
-            el.style.transform = `scale(${(Math.random() * 0.4) + 0.8})`;
+            el.style.transform = `scale(${(Math.random() * 0.3) + 0.8})`; // ขนาด 0.8 - 1.1
 
             container.appendChild(el);
             setTimeout(() => { el.remove(); }, duration * 1000);
@@ -221,15 +256,10 @@
         onChildAdded(wishesRef, (snapshot) => {
             const data = snapshot.val();
             if(data && data.message) {
-                if (containsBadWords(data.message)) {
-                    console.warn("Blocked message:", data.message); 
-                    return; 
-                }
+                if (containsBadWords(data.message)) { return; }
 
-                // *** จุดเปลี่ยนสำคัญ: ไม่สร้างทันที แต่เอาเข้าคิวไว้ก่อน ***
                 displayQueue.push(data.message);
 
-                // เก็บลง Pool ด้วยเผื่อไว้สุ่มตอนจอว่าง
                 if (!messagePool.includes(data.message)) {
                     messagePool.push(data.message);
                     updatePoolCount();
@@ -237,32 +267,34 @@
             }
         });
 
-        // --- ระบบจัดการคิวและการแสดงผล (Loop) ---
-        // ทำงานทุกๆ 0.8 วินาที
+        // --- Loop แสดงผล ---
         setInterval(() => {
-            const currentItems = document.querySelectorAll('.wish-item');
-            
-            // กรณีที่ 1: มีของรอในคิว (ไม่ว่าจะข้อความใหม่ หรือข้อความเก่าที่เพิ่งโหลดมา)
-            if (displayQueue.length > 0) {
-                // ถ้าบนจอยังไม่แน่นเกินไป (ตั้งไว้ไม่เกิน 12 อัน) ให้ปล่อยออกมา
-                if (currentItems.length < 12) {
-                    const textToShow = displayQueue.shift(); // ดึงคนแรกออกจากแถว
-                    createFloatingItem(textToShow);
+            // เช็คก่อนว่ามีเลนว่างไหม
+            const freeLaneIdx = getAvailableLane();
+
+            // ถ้ามีเลนว่าง
+            if (freeLaneIdx !== -1) {
+                // 1. ถ้ามีคนรอในคิว ให้เอาออกมาโชว์ก่อน
+                if (displayQueue.length > 0) {
+                    const text = displayQueue.shift();
+                    createFloatingItem(text, freeLaneIdx);
                 }
-            } 
-            // กรณีที่ 2: คิวว่างแล้ว แต่จอมันโล่งเกินไป ให้สุ่มของเก่ามาโชว์
-            else {
-                if (currentItems.length < 6 && messagePool.length > 0) {
-                    const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
-                    const cleanCandidates = messagePool.filter(text => !containsBadWords(text));
-                    const candidates = cleanCandidates.filter(text => !onScreenTexts.includes(text));
-                    
-                    if (candidates.length > 0) {
-                        createFloatingItem(candidates[Math.floor(Math.random() * candidates.length)]);
+                // 2. ถ้าคิวว่าง แต่จอยังโล่ง (สุ่มของเก่ามาโชว์)
+                else {
+                    const currentItems = document.querySelectorAll('.wish-item');
+                    // ถ้าบนจอน้อยกว่า 8 อัน ให้สุ่มมาเติม
+                    if (currentItems.length < 8 && messagePool.length > 0) {
+                        const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
+                        const candidates = messagePool.filter(text => !onScreenTexts.includes(text) && !containsBadWords(text));
+                        
+                        if (candidates.length > 0) {
+                            const randomText = candidates[Math.floor(Math.random() * candidates.length)];
+                            createFloatingItem(randomText, freeLaneIdx);
+                        }
                     }
                 }
             }
-        }, 800);
+        }, 1000); // เช็คทุก 1 วินาที
 
         // =========================================
         // --- 🎆 Fireworks Logic ---
