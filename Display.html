@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes with OWL (Logo Added)</title>
+    <title>AI Event: Wishes with OWL (Profanity Filter)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -11,8 +11,7 @@
         body { 
             margin: 0; 
             overflow: hidden; 
-            /* ✅ พื้นหลังรูปภาพ */
-            background-image: url('bg.png');
+            background-image: url('1.jpg');
             background-size: cover;      
             background-position: center; 
             background-repeat: no-repeat;
@@ -36,28 +35,25 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            z-index: 200; /* อยู่บนสุด */
-            width: 250px; /* ปรับขนาดโลโก้ตามต้องการ */
-            animation: logoFloat 4s ease-in-out infinite; /* ลอยเบาๆ */
+            z-index: 200; 
+            width: 150px; 
+            animation: logoFloat 4s ease-in-out infinite; 
         }
 
         .logo-box img {
             width: 100%;
             height: auto;
-            border-radius: 50%; /* ตัดขอบมนกลม (ถ้าต้องการ) */
-            /* เอฟเฟกต์เงาเรืองแสงเปลี่ยนสีได้ */
+            border-radius: 50%; 
             animation: logoGlow 2s infinite alternate; 
         }
 
-        /* Animation: เงาเรืองแสงวิบวับแบบไฟคริสต์มาส */
         @keyframes logoGlow {
-            0% { filter: drop-shadow(0 0 10px #ff0000) drop-shadow(0 0 20px #ff0000); transform: scale(1); } /* แดง */
-            33% { filter: drop-shadow(0 0 10px #00ff00) drop-shadow(0 0 20px #00ff00); transform: scale(1.02); } /* เขียว */
-            66% { filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 20px #ffd700); transform: scale(1); } /* ทอง */
-            100% { filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff); transform: scale(1.02); } /* ฟ้า */
+            0% { filter: drop-shadow(0 0 10px #ff0000) drop-shadow(0 0 20px #ff0000); transform: scale(1); } 
+            33% { filter: drop-shadow(0 0 10px #00ff00) drop-shadow(0 0 20px #00ff00); transform: scale(1.02); } 
+            66% { filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 20px #ffd700); transform: scale(1); } 
+            100% { filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff); transform: scale(1.02); } 
         }
 
-        /* Animation: ลอยขึ้นลงเบาๆ */
         @keyframes logoFloat {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
@@ -109,7 +105,7 @@
     </div>
     
     <div class="logo-box">
-        <img src="logo.png" alt="One World Library Logo">
+        <img src="logo.jpg" alt="One World Library Logo">
     </div>
 
     <div class="main-header">
@@ -162,6 +158,21 @@
         ];
         const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
 
+        // --- 🚫 รายการคำหยาบ (Profanity Filter) ---
+        // คุณสามารถเพิ่มคำที่ต้องการกรองได้ใน Array นี้
+        const badWords = [
+            "kuy", "fck", "shit", "bitch", "asshole", "fuck", 
+            "ควย", "เหี้ย", "สัส", "เย็ด", "มึง", "กู", "เลว", "ชั่ว", "นรก", "ตาย",
+            "โง่", "ควาย", "ดอกทอง", "กะหรี่", "porn", "sex", "18+"
+        ];
+
+        // ฟังก์ชันตรวจสอบคำหยาบ
+        function containsBadWords(text) {
+            if (!text) return false;
+            const lowerText = text.toLowerCase();
+            return badWords.some(word => lowerText.includes(word));
+        }
+
         function updatePoolCount() { poolCountLabel.innerText = `Memories: ${messagePool.length}`; }
 
         function createFloatingItem(text) {
@@ -189,6 +200,12 @@
         onChildAdded(wishesRef, (snapshot) => {
             const data = snapshot.val();
             if(data && data.message) {
+                // ✅ ตรวจสอบคำหยาบก่อนแสดงผล
+                if (containsBadWords(data.message)) {
+                    console.warn("Blocked message:", data.message); // แจ้งเตือนใน Console (ผู้ใช้ไม่เห็น)
+                    return; // ยกเลิกการทำงาน ไม่แสดงข้อความนี้
+                }
+
                 createFloatingItem(data.message);
                 if (!messagePool.includes(data.message)) {
                     messagePool.push(data.message);
@@ -200,7 +217,11 @@
         setInterval(() => {
             const currentItems = document.querySelectorAll('.wish-item');
             const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
-            const candidates = messagePool.filter(text => !onScreenTexts.includes(text));
+            
+            // กรองคำหยาบออกจาก Pool ด้วย (กันเหนียว)
+            const cleanCandidates = messagePool.filter(text => !containsBadWords(text));
+            const candidates = cleanCandidates.filter(text => !onScreenTexts.includes(text));
+            
             if (currentItems.length < 8 && candidates.length > 0) {
                 createFloatingItem(candidates[Math.floor(Math.random() * candidates.length)]);
             }
@@ -364,7 +385,6 @@
         function loop() {
             requestAnimationFrame(loop);
             
-            // ใช้เทคนิค Erase จางๆ เพื่อไม่ให้บังรูปพื้นหลัง
             ctx.globalCompositeOperation = 'destination-out';
             ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
             ctx.fillRect(0, 0, width, height);
