@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Year Wish Display (SDU Glowing Fireworks)</title>
+    <title>AI Event: Wishes with OWL (Image Background)</title>
     <style>
         /* Import ฟอนต์ */
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&family=Mountains+of+Christmas:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
 
-        body { margin: 0; overflow: hidden; background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e); font-family: 'Kanit', sans-serif; color: white; height: 100vh; position: relative; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            /* --- ✅ เปลี่ยนฉากหลังเป็นรูปภาพ 1.jpg --- */
+            background-image: url('1.jpg');
+            background-size: cover;      /* ขยายให้เต็มจอโดยรักษาสัดส่วน */
+            background-position: center; /* จัดให้อยู่ตรงกลาง */
+            background-repeat: no-repeat; /* ไม่ให้รูปซ้ำ */
+            
+            font-family: 'Kanit', sans-serif; 
+            color: white; 
+            height: 100vh; 
+            position: relative; 
+        }
         
-        /* --- CSS ฉากหลัง --- */
+        /* --- CSS ฉากหลัง (ลบส่วนภูเขาและต้นไม้ออก เพราะใช้รูปแทนแล้ว) --- */
         .scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .moon { position: absolute; top: 50px; right: 50px; width: 80px; height: 80px; background: #fdfcdc; border-radius: 50%; box-shadow: 0 0 40px #fdfcdc, 0 0 80px #ffffff; }
-        .hill { position: absolute; bottom: -50px; width: 100%; height: 200px; background: #eef2f3; border-radius: 100% 100% 0 0; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .hill-1 { left: -20%; width: 140%; height: 250px; z-index: 1; opacity: 0.9; }
-        .hill-2 { left: 20%; width: 120%; height: 180px; z-index: 2; opacity: 1; background: #fff; }
-        .tree { position: absolute; bottom: 120px; width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 60px solid #1a4c44; z-index: 1; }
-        .tree::after { content: ''; position: absolute; top: 20px; left: -15px; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 45px solid rgba(255,255,255,0.2); }
-        .t1 { left: 10%; bottom: 180px; transform: scale(1.5); }
-        .t2 { left: 15%; bottom: 150px; transform: scale(1.2); }
-        .t3 { right: 15%; bottom: 140px; transform: scale(2); }
-        .t4 { right: 5%; bottom: 160px; transform: scale(1.3); }
+        /* .moon, .hill, .tree { display: none; } ถ้าต้องการซ่อน elements เดิม */
 
         /* --- 🎆 SDU Fireworks Canvas --- */
         #fireworks-canvas {
@@ -30,9 +34,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 5; /* อยู่หน้าภูเขา แต่อยู่หลังหิมะและข้อความ */
+            z-index: 5; 
             pointer-events: none;
-            /* filter: blur(1px); เพิ่มความฟุ้งเล็กน้อย */
         }
 
         /* --- ❄️ หิมะตก --- */
@@ -62,10 +65,10 @@
 
         #sky-container { position: relative; width: 100%; height: 100vh; z-index: 10; pointer-events: none; }
 
-        /* --- 🎅 HEADER --- */
+        /* --- 🏆 HEADER --- */
         .main-header {
             position: fixed; 
-            top: 40px; 
+            top: 25px; 
             left: 50%; 
             transform: translateX(-50%);
             z-index: 100; 
@@ -73,30 +76,51 @@
             width: 100%;
             pointer-events: none;
         }
+
         .main-header h1 {
-            font-family: 'Mountains of Christmas', cursive;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 800; 
             font-size: 5rem; 
             margin: 0;
-            line-height: 1; 
-            color: #d32f2f;
-            text-shadow: 3px 3px 0px #fff, 0 0 20px #ffd700, 0 0 40px #ff6f00;
-            letter-spacing: 2px;
-            animation: textGlow 2s ease-in-out infinite alternate;
-        }
-        .main-header p {
-            font-family: 'Mountains of Christmas', cursive;
-            font-size: 3.2rem; 
-            color: #ffeb3b; 
-            margin: 15px 0 0 0; 
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.8); 
-            letter-spacing: 1px;
-        }
-        @keyframes textGlow {
-            from { text-shadow: 3px 3px 0 #fff, 0 0 10px #ffd700; transform: scale(1); }
-            to { text-shadow: 3px 3px 0 #fff, 0 0 30px #ffea00, 0 0 50px #ffeb3b; transform: scale(1.02); }
+            line-height: 1.1;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ffffff 0%, #00e5ff 50%, #ffffff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
+            animation: shine 3s linear infinite;
         }
 
-        /* --- สไตล์ข้อความอวยพร --- */
+        .main-header .sub-line {
+            display: block;
+            font-size: 2.5rem; 
+            color: #b3e5fc;
+            font-weight: 400;
+            margin-top: -10px;
+            text-shadow: 0 0 10px rgba(0, 150, 255, 0.5);
+        }
+
+        .festive-text {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 2.2rem;
+            margin-top: 15px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+            animation: gentleFloat 3s ease-in-out infinite;
+        }
+        .festive-text .merry { color: #ff1744; text-shadow: 0 0 10px #ff1744; margin-right: 10px; }
+        .festive-text .hny { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* --- สไตล์ข้อความอวยพร (พร้อมไฟคริสต์มาส) --- */
         .wish-item {
             position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center;
             opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto;
@@ -104,14 +128,24 @@
         .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
         .wish-icon { font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); animation: swing 3s ease-in-out infinite; }
         @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+        
         .wish-text {
             background: rgba(255, 255, 255, 0.95); color: #333; 
             padding: 8px 20px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; 
             margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            max-width: 250px; word-wrap: break-word; border: 3px solid transparent;
+            max-width: 250px; word-wrap: break-word; 
+            border: 4px dotted #ff0000; 
+            animation: xmasLights 1.5s infinite linear; 
         }
 
-        /* --- Keyframes --- */
+        @keyframes xmasLights {
+            0%   { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 
+            33%  { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 
+            66%  { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 
+            100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } 
+        }
+
+        /* --- Keyframes การลอย --- */
         @keyframes floatNormal { 0% { transform: translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatZigzag { 0% { transform: translateX(0) translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 25% { transform: translateX(30px) translateY(-30vh) scale(1); } 50% { transform: translateX(-30px) translateY(-60vh) scale(1); } 75% { transform: translateX(30px) translateY(-90vh) scale(1); } 100% { transform: translateX(0) translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatWobble { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 33% { transform: translateX(-20px) translateY(-40vh) rotate(-5deg); } 66% { transform: translateX(20px) translateY(-80vh) rotate(5deg); } 100% { transform: translateX(0) translateY(-130vh) rotate(0deg); opacity: 0.9; } }
@@ -127,18 +161,16 @@
 <body>
     <div class="scene">
         <canvas id="fireworks-canvas"></canvas>
-        <div class="moon"></div>
-        <div class="hill hill-1"></div>
-        <div class="hill hill-2"></div>
-        <div class="tree t1"></div>
-        <div class="tree t2"></div>
-        <div class="tree t3"></div>
-        <div class="tree t4"></div>
-    </div>
+        </div>
     
     <div class="main-header">
-        <h1>Merry Christmas</h1>
-        <p>& Happy New Year 2026</p>
+        <h1>AI Event</h1>
+        <span class="sub-line">AI wishes with OWL</span>
+        
+        <div class="festive-text">
+            <span class="merry">Merry Christmas</span>
+            <span class="hny">& Happy New Year 2026</span>
+        </div>
     </div>
 
     <div class="snow-layer"></div>
@@ -171,16 +203,15 @@
         const db = getDatabase(app);
         const wishesRef = ref(db, 'wishes');
 
-        // --- ส่วนจัดการข้อความลอย (Floating Wishes) ---
         const container = document.getElementById('sky-container');
         const poolCountLabel = document.getElementById('poolCount');
         const icons = ['🎅', '🎄', '🎁', '⛄', '❄️', '🦌', '🔔', '🌟', '🧦', '🐧', '🍪', '🥂'];
         let messagePool = [ "Happy New Year!", "สวัสดีปีใหม่ 2569", "ขอให้รวยๆ", "Merry Christmas", "โชคดีตลอดปี" ];
         const colorThemes = [
-            { name: "XmasRed", bg: "rgba(255, 235, 238, 0.95)", border: "#ff1744", text: "#b71c1c" },
-            { name: "PineGreen", bg: "rgba(232, 245, 233, 0.95)", border: "#00e676", text: "#1b5e20" },
-            { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", border: "#ffea00", text: "#f57f17" },
-            { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", border: "#2979ff", text: "#0d47a1" }
+            { name: "XmasRed", bg: "rgba(255, 235, 238, 0.95)", text: "#b71c1c" },
+            { name: "PineGreen", bg: "rgba(232, 245, 233, 0.95)", text: "#1b5e20" },
+            { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", text: "#f57f17" },
+            { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", text: "#0d47a1" }
         ];
         const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
 
@@ -195,8 +226,8 @@
             el.innerHTML = `<div class="wish-icon">${iconChar}</div><div class="wish-text">${text}</div>`;
             const textBox = el.querySelector('.wish-text');
             textBox.style.backgroundColor = theme.bg;
-            textBox.style.borderColor = theme.border;
             textBox.style.color = theme.text;
+            textBox.style.animationDelay = Math.random() + 's';
 
             el.style.left = (Math.floor(Math.random() * 85) + 5) + '%';
             const duration = Math.floor(Math.random() * 8) + 12; 
@@ -229,19 +260,13 @@
         }, 1500);
 
         // =========================================
-        // --- 🎆 ส่วนจัดการพลุ (Fireworks Logic) ---
+        // --- 🎆 Fireworks Logic ---
         // =========================================
         const canvas = document.getElementById('fireworks-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
-        
-        // Arrays สำหรับเก็บพลุชนิดต่างๆ
-        let sduParticles = [];
-        let sduRocket = null;
-        let sduPoints = [];
-
-        let standardRockets = [];
-        let standardParticles = [];
+        let sduParticles = [], sduRocket = null, sduPoints = [];
+        let standardRockets = [], standardParticles = [];
 
         function resizeCanvas() {
             width = canvas.width = window.innerWidth;
@@ -251,7 +276,6 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // --- คำนวณจุด SDU ---
         function calculateSDUPoints() {
             const tempCanvas = document.createElement('canvas');
             const tCtx = tempCanvas.getContext('2d');
@@ -274,7 +298,6 @@
             }
         }
 
-        // --- Class: SDU Rocket (จรวดหลักตรงกลาง) ---
         class SDURocket {
             constructor() {
                 this.x = width / 2;
@@ -299,7 +322,6 @@
             }
         }
 
-        // --- Class: SDU Particle (เม็ดสี SDU เรืองแสง) ---
         class SDUParticle {
             constructor(targetX, targetY) {
                 this.x = width / 2;
@@ -308,25 +330,22 @@
                 this.targetY = targetY;
                 this.speed = Math.random() * 0.06 + 0.03; 
                 this.alpha = 1;
-                // ✅ สีสันหลากหลาย (Full Spectrum)
+                
+                // ✅ Colorful SDU
                 this.hue = Math.random() * 360;
                 this.color = `hsl(${this.hue}, 100%, 60%)`;
             }
             update() {
                 this.x += (this.targetX - this.x) * this.speed;
                 this.y += (this.targetY - this.y) * this.speed;
-                // ✅ จางหายแบบมีประกายเล็กน้อย
                 this.alpha -= (Math.random() * 0.01 + 0.002);
             }
             draw() {
                 ctx.globalAlpha = this.alpha;
-                // ✅ เพิ่มการเรืองแสง (Glow Effect)
                 ctx.shadowBlur = 8;
                 ctx.shadowColor = this.color;
                 ctx.fillStyle = this.color;
-                // วาดจุดให้ใหญ่ขึ้นเล็กน้อยเพื่อให้เห็น Glow ชัดเจน
                 ctx.fillRect(this.x - 1, this.y - 1, 3, 3);
-                // Reset เงาเพื่อไม่ให้กระทบตัวอื่นมากเกินไป (Performance)
                 ctx.shadowBlur = 0;
                 ctx.globalAlpha = 1;
             }
@@ -342,20 +361,18 @@
             }
         }
 
-        // --- Class: Standard Rocket (จรวดข้างซ้าย/ขวา) ---
         class StandardRocket {
             constructor(side) {
-                // สุ่มตำแหน่งเริ่ม ซ้ายสุด หรือ ขวาสุด
                 this.x = side === 'left' ? width * 0.1 + Math.random() * width * 0.1 : width * 0.8 + Math.random() * width * 0.1;
                 this.y = height;
-                this.vy = -(Math.random() * 3 + 10); // ความเร็วสุ่ม
-                this.targetY = height * 0.2 + Math.random() * height * 0.3; // จุดระเบิดสุ่มความสูง
+                this.vy = -(Math.random() * 3 + 10);
+                this.targetY = height * 0.2 + Math.random() * height * 0.3;
                 this.hue = Math.random() * 360;
                 this.exploded = false;
             }
             update() {
                 this.y += this.vy;
-                this.vy += 0.05; // แรงโน้มถ่วงเล็กน้อย
+                this.vy += 0.05;
                 if (this.vy >= 0 || this.y <= this.targetY) {
                     this.exploded = true;
                     explodeStandard(this.x, this.y, this.hue);
@@ -367,11 +384,9 @@
             }
         }
 
-        // --- Class: Standard Particle (เม็ดสีพลุธรรมดา) ---
         class StandardParticle {
             constructor(x, y, hue) {
                 this.x = x; this.y = y;
-                // แตกออกเป็นวงกลม
                 const angle = Math.random() * Math.PI * 2;
                 const speed = Math.random() * 5 + 1;
                 this.vx = Math.cos(angle) * speed;
@@ -379,7 +394,7 @@
                 this.gravity = 0.05;
                 this.alpha = 1;
                 this.decay = Math.random() * 0.015 + 0.005;
-                this.hue = hue + (Math.random() * 40 - 20); // สีใกล้เคียงกัน
+                this.hue = hue + (Math.random() * 40 - 20);
             }
             update() {
                 this.vy += this.gravity;
@@ -401,16 +416,13 @@
             }
         }
 
-        // --- Main Animation Loop ---
         function loop() {
             requestAnimationFrame(loop);
-            // ใช้ clearRect เพื่อให้ฉากหลังชัดเจน (ถ้าต้องการหาง ให้ใช้ fillRect สีดำจางๆ แทน)
-            ctx.clearRect(0, 0, width, height);
+            // ✅ ใช้ fillRect สีดำจางๆ เพื่อให้เห็นหางพลุชัดขึ้นบนฉากหลังรูปภาพ
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
+            ctx.fillRect(0, 0, width, height);
 
-            // 1. จัดการพลุ SDU
-            if (!sduRocket && Math.random() < 0.005) { // โอกาสเกิด SDU Rocket น้อยๆ
-                sduRocket = new SDURocket();
-            }
+            if (!sduRocket && Math.random() < 0.005) { sduRocket = new SDURocket(); }
             if (sduRocket) {
                 sduRocket.update();
                 if (!sduRocket.exploded) sduRocket.draw();
@@ -422,8 +434,7 @@
                 if (sduParticles[i].alpha <= 0) sduParticles.splice(i, 1);
             }
 
-            // 2. จัดการพลุธรรมดา (ซ้าย/ขวา)
-            if (Math.random() < 0.02) { // โอกาสเกิดพลุข้างๆ บ่อยกว่า SDU นิดหน่อย
+            if (Math.random() < 0.02) {
                 const side = Math.random() < 0.5 ? 'left' : 'right';
                 standardRockets.push(new StandardRocket(side));
             }
@@ -440,7 +451,6 @@
         }
 
         loop();
-
     </script>
 </body>
 </html>
