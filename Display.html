@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (Random Lanes)</title>
+    <title>AI Event: Wishes (Smooth Flow)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -67,7 +67,7 @@
 
         /* --- ✨ Wish Items ✨ --- */
         .wish-item { 
-            position: absolute; bottom: -180px; 
+            position: absolute; bottom: -200px; 
             display: flex; flex-direction: column; align-items: center; 
             opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; 
             width: 14%; 
@@ -186,14 +186,15 @@
             { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", text: "#f57f17" },
             { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", text: "#0d47a1" }
         ];
-        
         const animationTypes = ['floatStraight', 'floatGentle'];
 
-        // --- ระบบ Lane ---
+        // --- ระบบ Lane (6 เลน) ---
         const lanePositions = [5, 20, 35, 50, 65, 80]; 
-        
-        // 🔥🔥🔥 สร้างเวลาปล่อยตัวแยกของแต่ละเลน (เริ่มต้นกระจายกัน ไม่เริ่มพร้อมกัน) 🔥🔥🔥
-        let laneNextSpawnTime = lanePositions.map(() => Date.now() + Math.random() * 5000);
+        let laneLastUsed = [0, 0, 0, 0, 0, 0]; 
+
+        // 🔥 GLOBAL TICKER CONTROL 🔥
+        // ตัวแปรควบคุมเวลาปล่อยตัวถัดไป (Global)
+        let nextGlobalSpawnTime = 0; 
 
         let displayQueue = []; 
 
@@ -224,6 +225,9 @@
             
             el.style.left = lanePositions[laneIndex] + '%';
 
+            // บันทึกเวลาใช้เลน
+            laneLastUsed[laneIndex] = Date.now();
+
             const duration = Math.floor(Math.random() * 10) + 25; 
             const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
             
@@ -248,49 +252,53 @@
             }
         });
 
-        // --- Loop เช็คเวลาของแต่ละเลน (ถี่ขึ้น เพื่อความแม่นยำ) ---
+        // --- 🔄 Loop ใหม่: Global Traffic Control 🔄 ---
+        // ทำงานทุก 100ms เพื่อความแม่นยำในการปล่อย
         setInterval(() => {
             const now = Date.now();
 
-            // วนลูปเช็คทุกเลน ว่าเลนไหนถึงเวลาปล่อยของแล้วบ้าง
-            lanePositions.forEach((pos, index) => {
+            // 1. เช็คว่าถึงเวลาปล่อยตัวถัดไปหรือยัง (Global Time)
+            if (now >= nextGlobalSpawnTime) {
                 
-                // ถ้าถึงเวลาของเลนนี้ (now >= เวลาที่กำหนดไว้)
-                if (now >= laneNextSpawnTime[index]) {
+                // 2. หาเลนที่ว่าง (Cooldown ผ่านไปแล้ว 3.5 วินาที)
+                const freeLanes = lanePositions
+                    .map((_, idx) => idx)
+                    .filter(idx => now - laneLastUsed[idx] > 3500);
+
+                // 3. ถ้ามีเลนว่าง ถึงจะเริ่มกระบวนการปล่อย
+                if (freeLanes.length > 0) {
                     
                     let textToSpawn = null;
 
-                    // 1. ถ้ามีคิวรออยู่ เอาคิวมาใช้ก่อน
+                    // A. ถ้ามีคนรอคิว (ข้อความใหม่) ให้สิทธิ์ก่อน
                     if (displayQueue.length > 0) {
                         textToSpawn = displayQueue.shift();
                     } 
-                    // 2. ถ้าไม่มีคิว ให้สุ่มของเก่ามาเติม (แต่ต้องดูว่าจอไม่รกเกินไป)
-                    else {
+                    // B. ถ้าไม่มีคิว แต่จอโล่ง (น้อยกว่า 12 อัน) ให้ดึงของเก่ามาเติม (Backfill)
+                    else if (document.querySelectorAll('.wish-item').length < 12 && messagePool.length > 0) {
                         const currentItems = document.querySelectorAll('.wish-item');
-                        if (currentItems.length < 15 && messagePool.length > 0) {
-                            const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
-                            const candidates = messagePool.filter(text => !onScreenTexts.includes(text) && !containsBadWords(text));
-                            
-                            if (candidates.length > 0) {
-                                textToSpawn = candidates[Math.floor(Math.random() * candidates.length)];
-                            }
+                        const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
+                        const candidates = messagePool.filter(text => !onScreenTexts.includes(text) && !containsBadWords(text));
+                        
+                        if (candidates.length > 0) {
+                            textToSpawn = candidates[Math.floor(Math.random() * candidates.length)];
                         }
                     }
 
+                    // 4. ถ้าได้ข้อความที่จะปล่อย
                     if (textToSpawn) {
-                        createFloatingItem(textToSpawn, index);
-                        
-                        // 🔥🔥🔥 ตั้งเวลาครั้งถัดไปสำหรับเลนนี้ (สุ่ม 2 - 8 วินาที) 🔥🔥🔥
-                        const delay = Math.floor(Math.random() * 6000) + 2000; // 2000ms - 8000ms
-                        laneNextSpawnTime[index] = now + delay;
-                    } else {
-                        // ถ้าไม่มีอะไรจะโชว์ ให้เช็คใหม่ในอีก 1 วิ
-                        laneNextSpawnTime[index] = now + 1000;
+                        // สุ่มเลือก 1 เลนจากเลนที่ว่าง
+                        const chosenLane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
+                        createFloatingItem(textToSpawn, chosenLane);
+
+                        // 🔥 KEY POINT: ตั้งเวลาปล่อยตัวถัดไป (0.5 - 2.0 วินาที) 🔥
+                        // ทำให้ปล่อยทีละตัว ไม่ปล่อยพรึ่บเดียว
+                        const nextDelay = Math.floor(Math.random() * 1500) + 500; 
+                        nextGlobalSpawnTime = now + nextDelay;
                     }
                 }
-            });
-
-        }, 200); // เช็ค schedule ทุกๆ 0.2 วินาที
+            }
+        }, 100);
 
         // =========================================
         // --- 🎆 Fireworks Logic ---
