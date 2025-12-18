@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎅 Admin: New Year Wishes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Sarabun:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --xmas-red: #D42426;
+            --xmas-green: #146B3A;
+            --xmas-gold: #F8B229;
+            --snow-white: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-gradient);
+            font-family: 'Sarabun', sans-serif;
+            color: var(--snow-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* หิมะตก */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: -1;
+            color: #fff;
+            user-select: none;
+            cursor: default;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(105vh); }
+        }
+
+        /* Layout */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-family: 'Mountains of Christmas', cursive;
+            font-size: 3.5rem;
+            color: var(--xmas-gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 30px;
+            min-height: 400px;
+            margin-bottom: 30px;
+        }
+
+        /* Filter Controls (เพิ่มใหม่) */
+        .filter-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .custom-select {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--xmas-gold);
+            background: rgba(0,0,0,0.3);
+            color: var(--snow-white);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .custom-select option {
+            background: #2c3e50;
+            color: white;
+        }
+
+        /* Stats Box Style */
+        .stats-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .stat-item {
+            flex: 1;
+            min-width: 150px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding-left: 10px;
+        }
+        .stat-item:last-child { border-right: none; }
+        .stat-value { font-size: 1.8rem; font-weight: bold; color: var(--xmas-gold); }
+        .stat-label { font-size: 0.9rem; color: #ccc; }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: var(--xmas-gold);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .wish-message {
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .wish-date {
+            font-size: 0.85em;
+            color: #ccc;
+        }
+
+        .btn-delete {
+            background-color: rgba(212, 36, 38, 0.8);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--xmas-red);
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(212, 36, 38, 0.5);
+        }
+
+        #loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: var(--xmas-gold);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="snow-container"></div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-sleigh"></i> Admin Panel <i class="fas fa-tree"></i></h1>
+            <p>สถิติและกรองข้อมูลรายวัน</p>
+        </header>
+
+        <div class="glass-panel">
+            
+            <div class="filter-section">
+                <label for="date-select"><i class="fas fa-calendar-alt"></i> เลือกวันที่ดูข้อมูล:</label>
+                <select id="date-select" class="custom-select">
+                    <option value="all">ดูทั้งหมด (All Time)</option>
+                    </select>
+            </div>
+
+            <div id="stats-container" class="stats-box" style="display: none;">
+                </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                <h3>📜 รายการคำอวยพร</h3>
+                <span style="font-size: 0.9rem; color: #aaa;" id="count-display">...</span>
+            </div>
+
+            <div id="loading"><i class="fas fa-snowflake fa-spin"></i> Loading Data...</div>
+
+            <table id="wishes-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th width="55%">ข้อความ (Message)</th>
+                        <th width="15%">จำนวนคำ</th>
+                        <th width="20%">เวลา (Time)</th>
+                        <th width="10%" style="text-align: center;">ลบ</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+            
+            <div id="empty-state" class="no-data" style="display: none;">
+                ไม่พบข้อมูลในวันที่เลือก ❄️
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Config ของคุณ
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
+            authDomain: "newyearwish-6006d.firebaseapp.com",
+            databaseURL: "https://newyearwish-6006d-default-rtdb.firebaseio.com",
+            projectId: "newyearwish-6006d",
+            storageBucket: "newyearwish-6006d.firebasestorage.app",
+            messagingSenderId: "2243087360",
+            appId: "1:2243087360:web:8b6d73f67ea1488b12dce5",
+            measurementId: "G-5TV5JZPWLV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Elements
+        const tableBody = document.getElementById('table-body');
+        const loadingDiv = document.getElementById('loading');
+        const table = document.getElementById('wishes-table');
+        const emptyState = document.getElementById('empty-state');
+        const countDisplay = document.getElementById('count-display');
+        const statsContainer = document.getElementById('stats-container');
+        const dateSelect = document.getElementById('date-select');
+
+        // ตัวแปรเก็บข้อมูลดิบทั้งหมด
+        let allWishesData = []; 
+        let uniqueDates = new Set();
+
+        // ฟังก์ชันนับคำ
+        function countWords(str) {
+            if (!str) return 0;
+            return str.trim().split(/\s+/).filter(word => word.length > 0).length;
+        }
+
+        // ฟังก์ชัน Render หน้าจอ (ทำงานทุกครั้งที่ข้อมูลเปลี่ยน หรือ เลือก Filter ใหม่)
+        function renderPage() {
+            const filterValue = dateSelect.value;
+            
+            // 1. กรองข้อมูลตาม Dropdown
+            let filteredData = allWishesData;
+            
+            if (filterValue !== 'all') {
+                filteredData = allWishesData.filter(wish => {
+                    const wishDate = new Date(wish.timestamp).toLocaleDateString('th-TH');
+                    return wishDate === filterValue;
+                });
+            }
+
+            // 2. คำนวณสถิติของข้อมูลที่กรองแล้ว
+            let totalWords = 0;
+            filteredData.forEach(wish => totalWords += countWords(wish.message));
+            
+            // แสดงสถิติ
+            statsContainer.style.display = 'flex';
+            statsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${filteredData.length}</div>
+                    <div class="stat-label">จำนวนข้อความ (${filterValue === 'all' ? 'ทั้งหมด' : filterValue})</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${totalWords}</div>
+                    <div class="stat-label">รวมจำนวนคำ (${filterValue === 'all' ? 'ทั้งหมด' : filterValue})</div>
+                </div>
+            `;
+            
+            countDisplay.innerText = `แสดง: ${filteredData.length} รายการ`;
+
+            // 3. วาดตาราง
+            tableBody.innerHTML = '';
+            
+            if (filteredData.length > 0) {
+                table.style.display = 'table';
+                emptyState.style.display = 'none';
+
+                filteredData.forEach(wish => {
+                    const wordCount = countWords(wish.message);
+                    const dateObj = new Date(wish.timestamp);
+                    const dateStr = dateObj.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+                    const timeStr = dateObj.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+
+                    const row = `
+                        <tr>
+                            <td>
+                                <div class="wish-message">"${wish.message}"</div>
+                                <div style="font-size: 0.8rem; color: #aaa;">ID: ${wish.id}</div>
+                            </td>
+                            <td>
+                                <span style="color: var(--xmas-gold); font-weight: bold;">${wordCount} คำ</span>
+                            </td>
+                            <td>
+                                <div class="wish-date"><i class="far fa-clock"></i> ${timeStr}</div>
+                                <div class="wish-date">${dateStr}</div>
+                            </td>
+                            <td style="text-align: center;">
+                                <button class="btn-delete" onclick="deleteWish('${wish.id}', '${wish.message}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } else {
+                table.style.display = 'none';
+                emptyState.style.display = 'block';
+                emptyState.innerText = "ไม่พบข้อความในวันที่เลือก ❄️";
+            }
+        }
+
+        // ฟังก์ชันอัพเดท Dropdown วันที่
+        function updateDateDropdown() {
+            // เก็บค่าที่เลือกปัจจุบันไว้ก่อน (ถ้ามี) เพื่อไม่ให้ Dropdown เด้งกลับ
+            const currentSelection = dateSelect.value;
+
+            // ล้าง Option เก่า (ยกเว้น All)
+            dateSelect.innerHTML = '<option value="all">ดูทั้งหมด (All Time)</option>';
+
+            // แปลง Set เป็น Array แล้วเรียงวันที่ (ใหม่ -> เก่า)
+            // ต้องระวังการ Sort วันที่แบบ String ไทย จึงใช้ timestamp ช่วยไม่ได้ตรงๆ 
+            // แต่วิธีง่ายสุดคือ เรา Sort allWishesData มาแล้ว ก็ดึง Unique จากตรงนั้นได้เลยตามลำดับ
+            const sortedUniqueDates = [];
+            allWishesData.forEach(wish => {
+                const d = new Date(wish.timestamp).toLocaleDateString('th-TH');
+                if(!sortedUniqueDates.includes(d)) {
+                    sortedUniqueDates.push(d);
+                }
+            });
+
+            sortedUniqueDates.forEach(dateStr => {
+                const option = document.createElement('option');
+                option.value = dateStr;
+                option.innerText = `วันที่ ${dateStr}`;
+                dateSelect.appendChild(option);
+            });
+
+            // คืนค่าที่เลือก ถ้าค่านั้นยังมีอยู่
+            if (sortedUniqueDates.includes(currentSelection) || currentSelection === 'all') {
+                dateSelect.value = currentSelection;
+            }
+        }
+
+        // --- 1. ฟังค่า Realtime ---
+        const wishesRef = ref(db, 'wishes');
+
+        onValue(wishesRef, (snapshot) => {
+            loadingDiv.style.display = 'none';
+            const data = snapshot.val();
+
+            if (data) {
+                // แปลงข้อมูลและเก็บเข้าตัวแปรกลาง
+                allWishesData = Object.entries(data).map(([key, value]) => ({
+                    id: key,
+                    ...value
+                }));
+                // เรียงจาก ใหม่ -> เก่า
+                allWishesData.sort((a, b) => b.timestamp - a.timestamp);
+                
+                // อัพเดท Dropdown และหน้าจอ
+                updateDateDropdown();
+                renderPage();
+            } else {
+                allWishesData = [];
+                renderPage();
+            }
+        });
+
+        // --- Event Listener เมื่อเปลี่ยน Dropdown ---
+        dateSelect.addEventListener('change', () => {
+            renderPage();
+        });
+
+        // --- ฟังก์ชันลบ ---
+        window.deleteWish = (id, message) => {
+            if(confirm(`ยืนยันที่จะลบข้อความนี้?\n\n"${message}"`)) {
+                remove(ref(db, 'wishes/' + id))
+                    .catch((error) => alert("เกิดข้อผิดพลาด: " + error.message));
+            }
+        };
+
+        // --- Snow Effect ---
+        function createSnow() {
+            const container = document.getElementById('snow-container');
+            const count = 30;
+            for(let i=0; i<count; i++){
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerHTML = ['❄', '❅', '❆'][Math.floor(Math.random()*3)];
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.opacity = Math.random();
+                flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                flake.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(flake);
+            }
+        }
+        createSnow();
+    </script>
+</body>
+</html>

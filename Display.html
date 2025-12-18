@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes with OWL (Profanity Filter)</title>
+    <title>AI Event: Wishes with OWL (3D Header)</title>
     <style>
         /* Import ฟอนต์ */
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&family=Mountains+of+Christmas:wght@700&display=swap');
 
         body { 
             margin: 0; 
             overflow: hidden; 
-            background-image: url('bg.png');
+            /* ✅ พื้นหลังรูปภาพ */
+            background-image: url('1.jpg');
             background-size: cover;      
             background-position: center; 
             background-repeat: no-repeat;
@@ -59,25 +60,85 @@
             50% { transform: translateY(-10px); }
         }
 
-        /* HEADER */
+        /* --- 🏆 HEADER (3D & Dimensional Style) --- */
         .main-header {
-            position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
             z-index: 100; text-align: center; width: 100%; pointer-events: none;
         }
 
+        /* หัวข้อ AI EVENT แบบ 3D */
         .main-header h1 {
-            font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 5rem; margin: 0; line-height: 1.1; text-transform: uppercase;
-            background: linear-gradient(to right, #ffffff 0%, #00e5ff 50%, #ffffff 100%);
-            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6)); animation: shine 3s linear infinite;
+            font-family: 'Kanit', sans-serif; 
+            font-weight: 900; /* หนาพิเศษ */
+            font-size: 6rem; /* ใหญ่สะใจ */
+            margin: 0; 
+            line-height: 1; 
+            text-transform: uppercase;
+            color: #e0ffff; /* สีขาวอมฟ้า */
+            
+            /* เทคนิคเงาซ้อนชั้นสร้างมิติ (3D Depth + Neon Glow) */
+            text-shadow: 
+                0 0 10px rgba(0, 229, 255, 0.8),   /* Glow ชั้นใน */
+                0 0 20px rgba(0, 229, 255, 0.6),   /* Glow ชั้นนอก */
+                1px 1px 0 #008ba3,                 /* มิติชั้นที่ 1 */
+                2px 2px 0 #008ba3,                 /* มิติชั้นที่ 2 */
+                3px 3px 0 #008ba3,                 /* มิติชั้นที่ 3 */
+                4px 4px 0 #008ba3,                 /* มิติชั้นที่ 4 */
+                5px 5px 0 #005662,                 /* เงาลึก */
+                6px 6px 10px rgba(0,0,0,0.5);      /* เงาตกกระทบพื้น */
+            
+            letter-spacing: 3px;
+            animation: float3D 3s ease-in-out infinite;
         }
-        .main-header .sub-line { display: block; font-size: 2.5rem; color: #b3e5fc; font-weight: 400; margin-top: -10px; text-shadow: 0 0 10px rgba(0, 150, 255, 0.5); }
-        .festive-text { font-family: 'Mountains of Christmas', cursive; font-size: 2.2rem; margin-top: 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); letter-spacing: 1px; animation: gentleFloat 3s ease-in-out infinite; }
-        .festive-text .merry { color: #ff1744; text-shadow: 0 0 10px #ff1744; margin-right: 10px; }
-        .festive-text .hny { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
 
-        @keyframes shine { to { background-position: 200% center; } }
-        @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        /* หัวข้อย่อย */
+        .main-header .sub-line { 
+            display: block; 
+            font-family: 'Kanit', sans-serif;
+            font-size: 2.2rem; 
+            color: #80deea; 
+            font-weight: 600; 
+            margin-top: -5px; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        /* กล่องข้อความเทศกาล */
+        .festive-text { 
+            font-family: 'Mountains of Christmas', cursive; 
+            font-size: 2.5rem; 
+            margin-top: 15px; 
+            letter-spacing: 1px; 
+            filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.8));
+        }
+
+        /* Merry Christmas (สีแดงสด มีขอบขาว) */
+        .festive-text .merry { 
+            color: #ff1744; 
+            text-shadow: 
+                2px 2px 0 #fff, /* ขอบขาวจำลอง */
+                0 0 15px #ff1744; /* เรืองแสงแดง */
+            margin-right: 15px; 
+            font-weight: bold;
+        }
+
+        /* Happy New Year (สีทองอร่าม) */
+        .festive-text .hny { 
+            color: #ffd700; 
+            text-shadow: 
+                2px 2px 0 #9e7d04, /* ขอบทองเข้ม */
+                0 0 20px #ffd700; /* เรืองแสงทอง */
+            font-weight: bold;
+        }
+
+        /* Animation ให้หัวข้อลอยแบบ 3D */
+        @keyframes float3D {
+            0%, 100% { transform: translateY(0) rotateX(0); }
+            50% { transform: translateY(-10px) rotateX(5deg); }
+        }
+
+        @keyframes snowFall { 0% { background-position: 0 0; } 100% { background-position: 50px 500px; } }
 
         /* Wish Items */
         .wish-item { position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center; opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; }
@@ -105,11 +166,11 @@
     </div>
     
     <div class="logo-box">
-        <img src="logo.png" alt="One World Library Logo">
+        <img src="logo.jpg" alt="One World Library Logo">
     </div>
 
     <div class="main-header">
-        <h1>AI Event</h1>
+        <h1>AI EVENT</h1>
         <span class="sub-line">AI wishes with OWL</span>
         <div class="festive-text">
             <span class="merry">Merry Christmas</span>
@@ -159,14 +220,12 @@
         const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
 
         // --- 🚫 รายการคำหยาบ (Profanity Filter) ---
-        // คุณสามารถเพิ่มคำที่ต้องการกรองได้ใน Array นี้
         const badWords = [
             "kuy", "fck", "shit", "bitch", "asshole", "fuck", 
             "ควย", "เหี้ย", "สัส", "เย็ด", "มึง", "กู", "เลว", "ชั่ว", "นรก", "ตาย",
             "โง่", "ควาย", "ดอกทอง", "กะหรี่", "porn", "sex", "18+"
         ];
 
-        // ฟังก์ชันตรวจสอบคำหยาบ
         function containsBadWords(text) {
             if (!text) return false;
             const lowerText = text.toLowerCase();
@@ -200,10 +259,9 @@
         onChildAdded(wishesRef, (snapshot) => {
             const data = snapshot.val();
             if(data && data.message) {
-                // ✅ ตรวจสอบคำหยาบก่อนแสดงผล
                 if (containsBadWords(data.message)) {
-                    console.warn("Blocked message:", data.message); // แจ้งเตือนใน Console (ผู้ใช้ไม่เห็น)
-                    return; // ยกเลิกการทำงาน ไม่แสดงข้อความนี้
+                    console.warn("Blocked message:", data.message); 
+                    return; 
                 }
 
                 createFloatingItem(data.message);
@@ -218,7 +276,6 @@
             const currentItems = document.querySelectorAll('.wish-item');
             const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
             
-            // กรองคำหยาบออกจาก Pool ด้วย (กันเหนียว)
             const cleanCandidates = messagePool.filter(text => !containsBadWords(text));
             const candidates = cleanCandidates.filter(text => !onScreenTexts.includes(text));
             
