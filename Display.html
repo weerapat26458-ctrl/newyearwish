@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes with OWL (Slower Speed)</title>
+    <title>AI Event: Wishes with OWL (Modified)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -79,23 +79,80 @@
         @keyframes shine { to { background-position: 200% center; } }
         @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        /* Wish Items */
-        .wish-item { position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center; opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; }
-        .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
-        .wish-icon { font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); animation: swing 3s ease-in-out infinite; }
-        .wish-text {
-            background: rgba(255, 255, 255, 0.95); color: #333; padding: 8px 20px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 250px; word-wrap: break-word; border: 4px dotted #ff0000; animation: xmasLights 1.5s infinite linear; 
+        /* --- ✨ Wish Items (แก้ไขขนาดตรงนี้) ✨ --- */
+        .wish-item { 
+            position: absolute; bottom: -150px; 
+            display: flex; flex-direction: column; align-items: center; 
+            opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; 
         }
+        .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
+        
+        /* ปรับขนาด Icon ให้ใหญ่ขึ้น */
+        .wish-icon { 
+            font-size: 6rem; /* เดิม 3.5rem */
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); 
+            animation: swing 3s ease-in-out infinite; 
+        }
+        
+        /* ปรับขนาด Text ให้ใหญ่ขึ้น */
+        .wish-text {
+            background: rgba(255, 255, 255, 0.95); 
+            color: #333; 
+            padding: 15px 30px; /* เพิ่ม Padding */
+            border-radius: 25px; 
+            font-size: 2.2rem; /* เดิม 1.1rem เพิ่มเป็น 2.2rem ให้เห็นชัดๆ */
+            font-weight: 800; /* หนาขึ้น */
+            margin-top: 5px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
+            max-width: 400px; /* เพิ่มความกว้างสูงสุด */
+            word-wrap: break-word; 
+            border: 6px dotted #ff0000; /* ขอบหนาขึ้น */
+            animation: xmasLights 1.5s infinite linear; 
+        }
+
         @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
         @keyframes xmasLights { 0% { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 33% { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 66% { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } }
+        
+        /* Animation การลอย */
         @keyframes floatNormal { 0% { transform: translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatZigzag { 0% { transform: translateX(0) translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 25% { transform: translateX(30px) translateY(-30vh) scale(1); } 50% { transform: translateX(-30px) translateY(-60vh) scale(1); } 75% { transform: translateX(30px) translateY(-90vh) scale(1); } 100% { transform: translateX(0) translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatWobble { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 33% { transform: translateX(-20px) translateY(-40vh) rotate(-5deg); } 66% { transform: translateX(20px) translateY(-80vh) rotate(5deg); } 100% { transform: translateX(0) translateY(-130vh) rotate(0deg); opacity: 0.9; } }
 
         .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
-        .qr-zone { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .qr-zone h3 { margin: 0; font-size: 1rem; color: #fdfcdc; text-shadow: 0 0 5px #ffeb3b; }
-        .qr-img-box { width: 140px; height: 140px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        
+        /* --- 🎁 QR Zone (แก้ไขให้ชัดเจน) --- */
+        .qr-zone { 
+            position: fixed; bottom: 20px; right: 20px; z-index: 100; 
+            /* เปลี่ยนพื้นหลังเป็นสีดำจางๆ เพื่อให้ตัวหนังสือเด้งออกมา */
+            background: rgba(0, 0, 0, 0.7); 
+            backdrop-filter: blur(10px); 
+            padding: 20px; 
+            border-radius: 20px; 
+            border: 2px solid rgba(255,255,255,0.5); 
+            text-align: center; 
+            color: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            display: flex; flex-direction: column; align-items: center; gap: 10px; 
+        }
+        
+        .qr-zone h3 { 
+            margin: 0; 
+            font-size: 1.8rem; /* ขยายขนาดตัวหนังสือ */
+            color: #ffea00; /* เปลี่ยนเป็นสีเหลืองทอง */
+            text-shadow: 2px 2px 0px #000000; /* ใส่เงาดำตัดขอบให้อ่านง่าย */
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        
+        .qr-img-box { 
+            width: 160px; /* ขยายกล่อง QR นิดหน่อย */
+            height: 160px; 
+            background: white; 
+            border-radius: 10px; 
+            display: flex; align-items: center; justify-content: center; 
+            overflow: hidden; 
+            border: 5px solid white;
+        }
         .qr-img-box img { width: 100%; height: 100%; object-fit: contain; }
     </style>
 </head>
@@ -187,9 +244,7 @@
 
             el.style.left = (Math.floor(Math.random() * 85) + 5) + '%';
             
-            // 🔥🔥🔥 แก้ไขความเร็วตรงนี้ 🔥🔥🔥
-            // เพิ่มเวลา (Duration) ให้มากขึ้น เพื่อให้ลอยช้าลง
-            // เดิม: 12-20 วินาที -> ใหม่: 25-40 วินาที
+            // 🔥🔥🔥 แก้ไขความเร็วตรงนี้ (คงเดิมตามไฟล์ล่าสุด) 🔥🔥🔥
             const duration = Math.floor(Math.random() * 15) + 25; 
             
             const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
