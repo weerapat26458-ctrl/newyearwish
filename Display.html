@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes with OWL (Image Background)</title>
+    <title>AI Event: Wishes with OWL (Logo Added)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -31,15 +31,36 @@
             z-index: 5; pointer-events: none;
         }
 
-        /* หิมะ */
-        .snow-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            pointer-events: none; z-index: 20; opacity: 0.8;
-            background-image: 
-                radial-gradient(3px 3px at 100px 50px, #fff, transparent),
-                radial-gradient(4px 4px at 200px 150px, #fff, transparent),
-                radial-gradient(3px 3px at 300px 250px, #fff, transparent);
-            background-size: 550px 550px; animation: snowFall 5s linear infinite;
+        /* --- 🦉 LOGO มุมซ้ายบน --- */
+        .logo-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200; /* อยู่บนสุด */
+            width: 150px; /* ปรับขนาดโลโก้ตามต้องการ */
+            animation: logoFloat 4s ease-in-out infinite; /* ลอยเบาๆ */
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: auto;
+            border-radius: 50%; /* ตัดขอบมนกลม (ถ้าต้องการ) */
+            /* เอฟเฟกต์เงาเรืองแสงเปลี่ยนสีได้ */
+            animation: logoGlow 2s infinite alternate; 
+        }
+
+        /* Animation: เงาเรืองแสงวิบวับแบบไฟคริสต์มาส */
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 10px #ff0000) drop-shadow(0 0 20px #ff0000); transform: scale(1); } /* แดง */
+            33% { filter: drop-shadow(0 0 10px #00ff00) drop-shadow(0 0 20px #00ff00); transform: scale(1.02); } /* เขียว */
+            66% { filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 20px #ffd700); transform: scale(1); } /* ทอง */
+            100% { filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff); transform: scale(1.02); } /* ฟ้า */
+        }
+
+        /* Animation: ลอยขึ้นลงเบาๆ */
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         /* HEADER */
@@ -61,7 +82,6 @@
 
         @keyframes shine { to { background-position: 200% center; } }
         @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        @keyframes snowFall { 0% { background-position: 0 0; } 100% { background-position: 50px 500px; } }
 
         /* Wish Items */
         .wish-item { position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center; opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; }
@@ -88,6 +108,10 @@
         <canvas id="fireworks-canvas"></canvas>
     </div>
     
+    <div class="logo-box">
+        <img src="logo.jpg" alt="One World Library Logo">
+    </div>
+
     <div class="main-header">
         <h1>AI Event</h1>
         <span class="sub-line">AI wishes with OWL</span>
@@ -97,7 +121,6 @@
         </div>
     </div>
 
-    <div class="snow-layer"></div>
     <div id="sky-container"></div>
     <div class="pool-status" id="poolCount">Memories: 0</div>
 
@@ -341,14 +364,12 @@
         function loop() {
             requestAnimationFrame(loop);
             
-            // 🔥🔥🔥 จุดที่แก้ไข 🔥🔥🔥
-            // เปลี่ยนจากถมสีดำ (fillRect) เป็นการ "ลบออกจางๆ" (destination-out)
-            // วิธีนี้จะทำให้พื้นหลังที่เป็นรูปภาพ (1.jpg) มองเห็นทะลุผ่านได้
+            // ใช้เทคนิค Erase จางๆ เพื่อไม่ให้บังรูปพื้นหลัง
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // ค่า 0.1 คือความยาวหางพลุ (ยิ่งน้อยยิ่งยาว)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
             ctx.fillRect(0, 0, width, height);
             
-            ctx.globalCompositeOperation = 'source-over'; // กลับสู่โหมดวาดปกติ
+            ctx.globalCompositeOperation = 'source-over'; 
 
             if (!sduRocket && Math.random() < 0.005) { sduRocket = new SDURocket(); }
             if (sduRocket) {
