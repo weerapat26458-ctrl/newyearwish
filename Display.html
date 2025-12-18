@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes with OWL (Modified)</title>
+    <title>AI Event: Wishes with OWL (Queue System)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -30,41 +30,28 @@
             z-index: 5; pointer-events: none;
         }
 
-        /* --- 🦉 LOGO มุมซ้ายบน --- */
+        /* --- 🦉 LOGO --- */
         .logo-box {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 200; 
-            width: 300px; 
-            animation: logoFloat 4s ease-in-out infinite; 
+            position: fixed; top: 20px; left: 20px; z-index: 200; 
+            width: 300px; animation: logoFloat 4s ease-in-out infinite; 
         }
-
         .logo-box img {
-            width: 100%;
-            height: auto;
-            border-radius: 50%; 
+            width: 100%; height: auto; border-radius: 50%; 
             animation: logoGlow 2s infinite alternate; 
         }
-
         @keyframes logoGlow {
             0% { filter: drop-shadow(0 0 10px #ff0000) drop-shadow(0 0 20px #ff0000); transform: scale(1); } 
             33% { filter: drop-shadow(0 0 10px #00ff00) drop-shadow(0 0 20px #00ff00); transform: scale(1.02); } 
             66% { filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 20px #ffd700); transform: scale(1); } 
             100% { filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff); transform: scale(1.02); } 
         }
-
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+        @keyframes logoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         /* HEADER */
         .main-header {
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
             z-index: 100; text-align: center; width: 100%; pointer-events: none;
         }
-
         .main-header h1 {
             font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 5rem; margin: 0; line-height: 1.1; text-transform: uppercase;
             background: linear-gradient(to right, #ffffff 0%, #00e5ff 50%, #ffffff 100%);
@@ -75,11 +62,10 @@
         .festive-text { font-family: 'Mountains of Christmas', cursive; font-size: 2.2rem; margin-top: 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); letter-spacing: 1px; animation: gentleFloat 3s ease-in-out infinite; }
         .festive-text .merry { color: #ff1744; text-shadow: 0 0 10px #ff1744; margin-right: 10px; }
         .festive-text .hny { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
-
         @keyframes shine { to { background-position: 200% center; } }
         @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        /* --- ✨ Wish Items (แก้ไขขนาดตรงนี้) ✨ --- */
+        /* --- ✨ Wish Items ✨ --- */
         .wish-item { 
             position: absolute; bottom: -150px; 
             display: flex; flex-direction: column; align-items: center; 
@@ -87,72 +73,46 @@
         }
         .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
         
-        /* ปรับขนาด Icon ให้ใหญ่ขึ้น */
         .wish-icon { 
-            font-size: 6rem; /* เดิม 3.5rem */
+            font-size: 4.5rem; 
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); 
             animation: swing 3s ease-in-out infinite; 
         }
         
-        /* ปรับขนาด Text ให้ใหญ่ขึ้น */
         .wish-text {
             background: rgba(255, 255, 255, 0.95); 
             color: #333; 
-            padding: 15px 30px; /* เพิ่ม Padding */
-            border-radius: 25px; 
-            font-size: 2.2rem; /* เดิม 1.1rem เพิ่มเป็น 2.2rem ให้เห็นชัดๆ */
-            font-weight: 800; /* หนาขึ้น */
+            padding: 12px 25px; 
+            border-radius: 20px; 
+            font-size: 1.6rem; 
+            font-weight: 800; 
             margin-top: 5px; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
-            max-width: 400px; /* เพิ่มความกว้างสูงสุด */
+            max-width: 320px; 
             word-wrap: break-word; 
-            border: 6px dotted #ff0000; /* ขอบหนาขึ้น */
+            border: 5px dotted #ff0000; 
             animation: xmasLights 1.5s infinite linear; 
         }
 
         @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
         @keyframes xmasLights { 0% { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 33% { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 66% { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } }
         
-        /* Animation การลอย */
         @keyframes floatNormal { 0% { transform: translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatZigzag { 0% { transform: translateX(0) translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 25% { transform: translateX(30px) translateY(-30vh) scale(1); } 50% { transform: translateX(-30px) translateY(-60vh) scale(1); } 75% { transform: translateX(30px) translateY(-90vh) scale(1); } 100% { transform: translateX(0) translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatWobble { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 33% { transform: translateX(-20px) translateY(-40vh) rotate(-5deg); } 66% { transform: translateX(20px) translateY(-80vh) rotate(5deg); } 100% { transform: translateX(0) translateY(-130vh) rotate(0deg); opacity: 0.9; } }
 
         .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
         
-        /* --- 🎁 QR Zone (แก้ไขให้ชัดเจน) --- */
+        /* --- 🎁 QR Zone --- */
         .qr-zone { 
             position: fixed; bottom: 20px; right: 20px; z-index: 100; 
-            /* เปลี่ยนพื้นหลังเป็นสีดำจางๆ เพื่อให้ตัวหนังสือเด้งออกมา */
-            background: rgba(0, 0, 0, 0.7); 
-            backdrop-filter: blur(10px); 
-            padding: 20px; 
-            border-radius: 20px; 
-            border: 2px solid rgba(255,255,255,0.5); 
-            text-align: center; 
-            color: white; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); 
+            padding: 20px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.5); 
+            text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
             display: flex; flex-direction: column; align-items: center; gap: 10px; 
         }
-        
-        .qr-zone h3 { 
-            margin: 0; 
-            font-size: 1.8rem; /* ขยายขนาดตัวหนังสือ */
-            color: #ffea00; /* เปลี่ยนเป็นสีเหลืองทอง */
-            text-shadow: 2px 2px 0px #000000; /* ใส่เงาดำตัดขอบให้อ่านง่าย */
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-        
-        .qr-img-box { 
-            width: 160px; /* ขยายกล่อง QR นิดหน่อย */
-            height: 160px; 
-            background: white; 
-            border-radius: 10px; 
-            display: flex; align-items: center; justify-content: center; 
-            overflow: hidden; 
-            border: 5px solid white;
-        }
+        .qr-zone h3 { margin: 0; font-size: 1.8rem; color: #ffea00; text-shadow: 2px 2px 0px #000000; font-weight: 800; letter-spacing: 1px; }
+        .qr-img-box { width: 160px; height: 160px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 5px solid white; }
         .qr-img-box img { width: 100%; height: 100%; object-fit: contain; }
     </style>
 </head>
@@ -215,7 +175,9 @@
         ];
         const animationTypes = ['floatNormal', 'floatZigzag', 'floatWobble'];
 
-        // --- 🚫 รายการคำหยาบ (Profanity Filter) ---
+        // --- คิวสำหรับรอแสดงผล ---
+        let displayQueue = []; 
+
         const badWords = [
             "kuy", "fck", "shit", "bitch", "asshole", "fuck", 
             "ควย", "เหี้ย", "สัส", "เย็ด", "มึง", "กู", "เลว", "ชั่ว", "นรก", "ตาย",
@@ -244,7 +206,7 @@
 
             el.style.left = (Math.floor(Math.random() * 85) + 5) + '%';
             
-            // 🔥🔥🔥 แก้ไขความเร็วตรงนี้ (คงเดิมตามไฟล์ล่าสุด) 🔥🔥🔥
+            // ความเร็วเท่าเดิม
             const duration = Math.floor(Math.random() * 15) + 25; 
             
             const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
@@ -255,6 +217,7 @@
             setTimeout(() => { el.remove(); }, duration * 1000);
         }
 
+        // --- Firebase Listener ---
         onChildAdded(wishesRef, (snapshot) => {
             const data = snapshot.val();
             if(data && data.message) {
@@ -263,7 +226,10 @@
                     return; 
                 }
 
-                createFloatingItem(data.message);
+                // *** จุดเปลี่ยนสำคัญ: ไม่สร้างทันที แต่เอาเข้าคิวไว้ก่อน ***
+                displayQueue.push(data.message);
+
+                // เก็บลง Pool ด้วยเผื่อไว้สุ่มตอนจอว่าง
                 if (!messagePool.includes(data.message)) {
                     messagePool.push(data.message);
                     updatePoolCount();
@@ -271,17 +237,32 @@
             }
         });
 
+        // --- ระบบจัดการคิวและการแสดงผล (Loop) ---
+        // ทำงานทุกๆ 0.8 วินาที
         setInterval(() => {
             const currentItems = document.querySelectorAll('.wish-item');
-            const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
             
-            const cleanCandidates = messagePool.filter(text => !containsBadWords(text));
-            const candidates = cleanCandidates.filter(text => !onScreenTexts.includes(text));
-            
-            if (currentItems.length < 8 && candidates.length > 0) {
-                createFloatingItem(candidates[Math.floor(Math.random() * candidates.length)]);
+            // กรณีที่ 1: มีของรอในคิว (ไม่ว่าจะข้อความใหม่ หรือข้อความเก่าที่เพิ่งโหลดมา)
+            if (displayQueue.length > 0) {
+                // ถ้าบนจอยังไม่แน่นเกินไป (ตั้งไว้ไม่เกิน 12 อัน) ให้ปล่อยออกมา
+                if (currentItems.length < 12) {
+                    const textToShow = displayQueue.shift(); // ดึงคนแรกออกจากแถว
+                    createFloatingItem(textToShow);
+                }
+            } 
+            // กรณีที่ 2: คิวว่างแล้ว แต่จอมันโล่งเกินไป ให้สุ่มของเก่ามาโชว์
+            else {
+                if (currentItems.length < 6 && messagePool.length > 0) {
+                    const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
+                    const cleanCandidates = messagePool.filter(text => !containsBadWords(text));
+                    const candidates = cleanCandidates.filter(text => !onScreenTexts.includes(text));
+                    
+                    if (candidates.length > 0) {
+                        createFloatingItem(candidates[Math.floor(Math.random() * candidates.length)]);
+                    }
+                }
             }
-        }, 1500);
+        }, 800);
 
         // =========================================
         // --- 🎆 Fireworks Logic ---
