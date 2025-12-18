@@ -11,11 +11,11 @@
         body { 
             margin: 0; 
             overflow: hidden; 
-            /* --- ✅ เปลี่ยนฉากหลังเป็นรูปภาพ 1.jpg --- */
+            /* ✅ พื้นหลังรูปภาพ */
             background-image: url('1.jpg');
-            background-size: cover;      /* ขยายให้เต็มจอโดยรักษาสัดส่วน */
-            background-position: center; /* จัดให้อยู่ตรงกลาง */
-            background-repeat: no-repeat; /* ไม่ให้รูปซ้ำ */
+            background-size: cover;      
+            background-position: center; 
+            background-repeat: no-repeat;
             
             font-family: 'Kanit', sans-serif; 
             color: white; 
@@ -23,135 +23,60 @@
             position: relative; 
         }
         
-        /* --- CSS ฉากหลัง (ลบส่วนภูเขาและต้นไม้ออก เพราะใช้รูปแทนแล้ว) --- */
         .scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        /* .moon, .hill, .tree { display: none; } ถ้าต้องการซ่อน elements เดิม */
-
-        /* --- 🎆 SDU Fireworks Canvas --- */
+        
+        /* Canvas พลุ */
         #fireworks-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5; 
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; pointer-events: none;
         }
 
-        /* --- ❄️ หิมะตก --- */
+        /* หิมะ */
         .snow-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             pointer-events: none; z-index: 20; opacity: 0.8;
             background-image: 
                 radial-gradient(3px 3px at 100px 50px, #fff, transparent),
                 radial-gradient(4px 4px at 200px 150px, #fff, transparent),
-                radial-gradient(3px 3px at 300px 250px, #fff, transparent),
-                radial-gradient(4px 4px at 400px 350px, #fff, transparent),
-                radial-gradient(5px 5px at 500px 100px, #fff, transparent),
-                radial-gradient(3px 3px at 600px 400px, #fff, transparent),
-                radial-gradient(4px 4px at 800px 500px, #fff, transparent),
-                radial-gradient(3px 3px at 50px 550px, #fff, transparent);
+                radial-gradient(3px 3px at 300px 250px, #fff, transparent);
             background-size: 550px 550px; animation: snowFall 5s linear infinite;
         }
-        .snow-layer::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(4px 4px at 50px 50px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(5px 5px at 150px 250px, rgba(255,255,255,0.8), transparent),
-                radial-gradient(3px 3px at 350px 150px, rgba(255,255,255,0.8), transparent);
-            background-size: 400px 400px; animation: snowFall 10s linear infinite reverse; opacity: 0.6;
-        }
-        @keyframes snowFall { 0% { background-position: 0 0; } 100% { background-position: 50px 500px; } }
 
-        #sky-container { position: relative; width: 100%; height: 100vh; z-index: 10; pointer-events: none; }
-
-        /* --- 🏆 HEADER --- */
+        /* HEADER */
         .main-header {
-            position: fixed; 
-            top: 25px; 
-            left: 50%; 
-            transform: translateX(-50%);
-            z-index: 100; 
-            text-align: center; 
-            width: 100%;
-            pointer-events: none;
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
+            z-index: 100; text-align: center; width: 100%; pointer-events: none;
         }
 
         .main-header h1 {
-            font-family: 'Kanit', sans-serif;
-            font-weight: 800; 
-            font-size: 5rem; 
-            margin: 0;
-            line-height: 1.1;
-            text-transform: uppercase;
+            font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 5rem; margin: 0; line-height: 1.1; text-transform: uppercase;
             background: linear-gradient(to right, #ffffff 0%, #00e5ff 50%, #ffffff 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6));
-            animation: shine 3s linear infinite;
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6)); animation: shine 3s linear infinite;
         }
-
-        .main-header .sub-line {
-            display: block;
-            font-size: 2.5rem; 
-            color: #b3e5fc;
-            font-weight: 400;
-            margin-top: -10px;
-            text-shadow: 0 0 10px rgba(0, 150, 255, 0.5);
-        }
-
-        .festive-text {
-            font-family: 'Mountains of Christmas', cursive;
-            font-size: 2.2rem;
-            margin-top: 15px;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
-            letter-spacing: 1px;
-            animation: gentleFloat 3s ease-in-out infinite;
-        }
+        .main-header .sub-line { display: block; font-size: 2.5rem; color: #b3e5fc; font-weight: 400; margin-top: -10px; text-shadow: 0 0 10px rgba(0, 150, 255, 0.5); }
+        .festive-text { font-family: 'Mountains of Christmas', cursive; font-size: 2.2rem; margin-top: 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); letter-spacing: 1px; animation: gentleFloat 3s ease-in-out infinite; }
         .festive-text .merry { color: #ff1744; text-shadow: 0 0 10px #ff1744; margin-right: 10px; }
         .festive-text .hny { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-        @keyframes gentleFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
+        @keyframes shine { to { background-position: 200% center; } }
+        @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes snowFall { 0% { background-position: 0 0; } 100% { background-position: 50px 500px; } }
 
-        /* --- สไตล์ข้อความอวยพร (พร้อมไฟคริสต์มาส) --- */
-        .wish-item {
-            position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center;
-            opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto;
-        }
+        /* Wish Items */
+        .wish-item { position: absolute; bottom: -150px; display: flex; flex-direction: column; align-items: center; opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; }
         .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
         .wish-icon { font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); animation: swing 3s ease-in-out infinite; }
-        @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
-        
         .wish-text {
-            background: rgba(255, 255, 255, 0.95); color: #333; 
-            padding: 8px 20px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; 
-            margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            max-width: 250px; word-wrap: break-word; 
-            border: 4px dotted #ff0000; 
-            animation: xmasLights 1.5s infinite linear; 
+            background: rgba(255, 255, 255, 0.95); color: #333; padding: 8px 20px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 250px; word-wrap: break-word; border: 4px dotted #ff0000; animation: xmasLights 1.5s infinite linear; 
         }
-
-        @keyframes xmasLights {
-            0%   { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 
-            33%  { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 
-            66%  { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 
-            100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } 
-        }
-
-        /* --- Keyframes การลอย --- */
+        @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+        @keyframes xmasLights { 0% { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 33% { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 66% { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } }
         @keyframes floatNormal { 0% { transform: translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatZigzag { 0% { transform: translateX(0) translateY(0) scale(1); opacity: 0; } 5% { opacity: 1; } 25% { transform: translateX(30px) translateY(-30vh) scale(1); } 50% { transform: translateX(-30px) translateY(-60vh) scale(1); } 75% { transform: translateX(30px) translateY(-90vh) scale(1); } 100% { transform: translateX(0) translateY(-130vh) scale(1); opacity: 0.9; } }
         @keyframes floatWobble { 0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; } 5% { opacity: 1; } 33% { transform: translateX(-20px) translateY(-40vh) rotate(-5deg); } 66% { transform: translateX(20px) translateY(-80vh) rotate(5deg); } 100% { transform: translateX(0) translateY(-130vh) rotate(0deg); opacity: 0.9; } }
 
         .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
-
         .qr-zone { position: fixed; bottom: 20px; right: 20px; z-index: 100; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .qr-zone h3 { margin: 0; font-size: 1rem; color: #fdfcdc; text-shadow: 0 0 5px #ffeb3b; }
         .qr-img-box { width: 140px; height: 140px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -161,12 +86,11 @@
 <body>
     <div class="scene">
         <canvas id="fireworks-canvas"></canvas>
-        </div>
+    </div>
     
     <div class="main-header">
         <h1>AI Event</h1>
         <span class="sub-line">AI wishes with OWL</span>
-        
         <div class="festive-text">
             <span class="merry">Merry Christmas</span>
             <span class="hny">& Happy New Year 2026</span>
@@ -330,8 +254,6 @@
                 this.targetY = targetY;
                 this.speed = Math.random() * 0.06 + 0.03; 
                 this.alpha = 1;
-                
-                // ✅ Colorful SDU
                 this.hue = Math.random() * 360;
                 this.color = `hsl(${this.hue}, 100%, 60%)`;
             }
@@ -418,9 +340,15 @@
 
         function loop() {
             requestAnimationFrame(loop);
-            // ✅ ใช้ fillRect สีดำจางๆ เพื่อให้เห็นหางพลุชัดขึ้นบนฉากหลังรูปภาพ
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
+            
+            // 🔥🔥🔥 จุดที่แก้ไข 🔥🔥🔥
+            // เปลี่ยนจากถมสีดำ (fillRect) เป็นการ "ลบออกจางๆ" (destination-out)
+            // วิธีนี้จะทำให้พื้นหลังที่เป็นรูปภาพ (1.jpg) มองเห็นทะลุผ่านได้
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // ค่า 0.1 คือความยาวหางพลุ (ยิ่งน้อยยิ่งยาว)
             ctx.fillRect(0, 0, width, height);
+            
+            ctx.globalCompositeOperation = 'source-over'; // กลับสู่โหมดวาดปกติ
 
             if (!sduRocket && Math.random() < 0.005) { sduRocket = new SDURocket(); }
             if (sduRocket) {
