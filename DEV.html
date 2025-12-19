@@ -15,43 +15,65 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            gap: 15px;
         }
-        h1 { margin-bottom: 2rem; }
+        h1 { margin-bottom: 1rem; color: #ff5252; }
         
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            max-width: 400px;
+            gap: 5px;
+        }
+        label { font-size: 0.9rem; color: #aaa; }
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: #333;
+            color: #0f0;
+            font-family: monospace;
+        }
+
         .jump-btn {
             background-color: #b71c1c;
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            padding: 2rem 4rem;
+            padding: 1.5rem 3rem;
             border: 4px solid #ff5252;
             border-radius: 20px;
             cursor: pointer;
             box-shadow: 0 0 20px #ff0000;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: transform 0.1s;
+            margin-top: 20px;
         }
-        
-        .jump-btn:active {
-            transform: scale(0.95);
-            background-color: #ff0000;
-            box-shadow: 0 0 50px #ff0000 inset;
-        }
-        
-        .status { margin-top: 20px; color: #aaa; }
+        .jump-btn:active { transform: scale(0.95); background-color: #ff0000; }
+        .status { margin-top: 20px; color: #aaa; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <h1>👻 DEV CONTROLLER</h1>
     
-    <button class="jump-btn" id="scareBtn">💀 JUMPSCARE NOW!</button>
+    <div class="control-group">
+        <label>🖼️ Image URL (ลิงก์รูปผี)</label>
+        <input type="text" id="imgInput" value="https://media.istockphoto.com/id/172346743/photo/spooky-man.jpg?s=612x612&w=0&k=20&c=Jvj8nyl5d3yJ4Qk-T4wbzL0h63iOswD7Qc1P_nLp2K4=">
+    </div>
+
+    <div class="control-group">
+        <label>🔊 Sound URL (ลิงก์ไฟล์เสียง .mp3)</label>
+        <input type="text" id="soundInput" value="https://www.soundjay.com/human/sounds/scream-01.mp3">
+    </div>
+    
+    <button class="jump-btn" id="scareBtn">💀 SEND JUMPSCARE</button>
     <div class="status" id="statusText">Ready...</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-        // ใช้ Config เดียวกับหน้าหลัก
         const firebaseConfig = {
             apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
             authDomain: "newyearwish-6006d.firebaseapp.com",
@@ -68,15 +90,20 @@
 
         const btn = document.getElementById('scareBtn');
         const status = document.getElementById('statusText');
+        const imgInput = document.getElementById('imgInput');
+        const soundInput = document.getElementById('soundInput');
 
         btn.addEventListener('click', () => {
-            // ส่งคำสั่งไปยัง Firebase Path 'admin_signals/jumpscare'
+            status.innerText = "Sending...";
+            
             set(ref(db, 'admin_signals/jumpscare'), {
                 trigger: true,
-                timestamp: Date.now() // ส่งเวลาปัจจุบันไปด้วย เพื่อเช็คไม่ให้ทำงานซ้ำ
+                timestamp: Date.now(),
+                imageUrl: imgInput.value,    // ส่งลิงก์รูปไปด้วย
+                soundUrl: soundInput.value   // ส่งลิงก์เสียงไปด้วย
             })
             .then(() => {
-                status.innerText = "Signal SENT! 💀 " + new Date().toLocaleTimeString();
+                status.innerText = "Signal SENT! 💀";
                 setTimeout(() => status.innerText = "Ready...", 2000);
             })
             .catch((err) => {
