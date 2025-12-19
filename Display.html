@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (Smooth Flow)</title>
+    <title>AI Event: Wishes (With Jumpscare)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -127,6 +127,31 @@
         .qr-zone h3 { margin: 0; font-size: 1.8rem; color: #ffea00; text-shadow: 2px 2px 0px #000000; font-weight: 800; letter-spacing: 1px; }
         .qr-img-box { width: 160px; height: 160px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 5px solid white; }
         .qr-img-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* 🔥 JUMPSCARE ZONE 🔥 */
+        #jumpscare-overlay {
+            display: none; /* ซ่อนไว้ก่อน */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: black; z-index: 99999;
+            justify-content: center; align-items: center;
+        }
+        #jumpscare-overlay img {
+            width: 100%; height: 100%; object-fit: cover;
+            animation: shake 0.1s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
     </style>
 </head>
 <body>
@@ -157,9 +182,14 @@
         </div>
     </div>
 
+    <div id="jumpscare-overlay">
+        <img src="https://media.istockphoto.com/id/172346743/photo/spooky-man.jpg?s=612x612&w=0&k=20&c=Jvj8nyl5d3yJ4Qk-T4wbzL0h63iOswD7Qc1P_nLp2K4=" alt="Scary">
+    </div>
+    <audio id="scream-audio" src="https://www.soundjay.com/human/sounds/scream-01.mp3"></audio>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getDatabase, ref, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+        import { getDatabase, ref, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
@@ -175,6 +205,35 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const wishesRef = ref(db, 'wishes');
+        
+        // --- 🔥 JUMPSCARE LISTENER 🔥 ---
+        const jumpRef = ref(db, 'admin_signals/jumpscare');
+        const jumpOverlay = document.getElementById('jumpscare-overlay');
+        const screamAudio = document.getElementById('scream-audio');
+        let lastTriggerTime = 0;
+
+        onValue(jumpRef, (snapshot) => {
+            const data = snapshot.val();
+            // เช็คว่ามีคำสั่งมา และเวลาของคำสั่งต้องใหม่กว่าปัจจุบันไม่เกิน 3 วินาที (ป้องกัน refresh แล้วหลอกซ้ำ)
+            if (data && data.trigger && data.timestamp > (Date.now() - 3000)) {
+                // ถ้าคำสั่งใหม่กว่าคำสั่งล่าสุดที่เคยเล่นไป
+                if (data.timestamp > lastTriggerTime) {
+                    lastTriggerTime = data.timestamp;
+                    triggerJumpscare();
+                }
+            }
+        });
+
+        function triggerJumpscare() {
+            jumpOverlay.style.display = 'flex'; // โชว์ภาพ
+            screamAudio.currentTime = 0;
+            screamAudio.play().catch(e => console.log("Audio need interaction first")); // เล่นเสียง
+            
+            // ซ่อนอัตโนมัติหลัง 2.5 วินาที
+            setTimeout(() => {
+                jumpOverlay.style.display = 'none';
+            }, 2500);
+        }
 
         const container = document.getElementById('sky-container');
         const poolCountLabel = document.getElementById('poolCount');
@@ -193,7 +252,6 @@
         let laneLastUsed = [0, 0, 0, 0, 0, 0]; 
 
         // 🔥 GLOBAL TICKER CONTROL 🔥
-        // ตัวแปรควบคุมเวลาปล่อยตัวถัดไป (Global)
         let nextGlobalSpawnTime = 0; 
 
         let displayQueue = []; 
@@ -253,28 +311,22 @@
         });
 
         // --- 🔄 Loop ใหม่: Global Traffic Control 🔄 ---
-        // ทำงานทุก 100ms เพื่อความแม่นยำในการปล่อย
         setInterval(() => {
             const now = Date.now();
 
-            // 1. เช็คว่าถึงเวลาปล่อยตัวถัดไปหรือยัง (Global Time)
             if (now >= nextGlobalSpawnTime) {
                 
-                // 2. หาเลนที่ว่าง (Cooldown ผ่านไปแล้ว 3.5 วินาที)
                 const freeLanes = lanePositions
                     .map((_, idx) => idx)
                     .filter(idx => now - laneLastUsed[idx] > 3500);
 
-                // 3. ถ้ามีเลนว่าง ถึงจะเริ่มกระบวนการปล่อย
                 if (freeLanes.length > 0) {
                     
                     let textToSpawn = null;
 
-                    // A. ถ้ามีคนรอคิว (ข้อความใหม่) ให้สิทธิ์ก่อน
                     if (displayQueue.length > 0) {
                         textToSpawn = displayQueue.shift();
                     } 
-                    // B. ถ้าไม่มีคิว แต่จอโล่ง (น้อยกว่า 12 อัน) ให้ดึงของเก่ามาเติม (Backfill)
                     else if (document.querySelectorAll('.wish-item').length < 12 && messagePool.length > 0) {
                         const currentItems = document.querySelectorAll('.wish-item');
                         const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
@@ -285,14 +337,10 @@
                         }
                     }
 
-                    // 4. ถ้าได้ข้อความที่จะปล่อย
                     if (textToSpawn) {
-                        // สุ่มเลือก 1 เลนจากเลนที่ว่าง
                         const chosenLane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
                         createFloatingItem(textToSpawn, chosenLane);
 
-                        // 🔥 KEY POINT: ตั้งเวลาปล่อยตัวถัดไป (0.5 - 2.0 วินาที) 🔥
-                        // ทำให้ปล่อยทีละตัว ไม่ปล่อยพรึ่บเดียว
                         const nextDelay = Math.floor(Math.random() * 1500) + 500; 
                         nextGlobalSpawnTime = now + nextDelay;
                     }

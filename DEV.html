@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEV CONTROL</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 { margin-bottom: 2rem; }
+        
+        .jump-btn {
+            background-color: #b71c1c;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 2rem 4rem;
+            border: 4px solid #ff5252;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 0 20px #ff0000;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        
+        .jump-btn:active {
+            transform: scale(0.95);
+            background-color: #ff0000;
+            box-shadow: 0 0 50px #ff0000 inset;
+        }
+        
+        .status { margin-top: 20px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <h1>👻 DEV CONTROLLER</h1>
+    
+    <button class="jump-btn" id="scareBtn">💀 JUMPSCARE NOW!</button>
+    <div class="status" id="statusText">Ready...</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        // ใช้ Config เดียวกับหน้าหลัก
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
+            authDomain: "newyearwish-6006d.firebaseapp.com",
+            databaseURL: "https://newyearwish-6006d-default-rtdb.firebaseio.com",
+            projectId: "newyearwish-6006d",
+            storageBucket: "newyearwish-6006d.firebasestorage.app",
+            messagingSenderId: "2243087360",
+            appId: "1:2243087360:web:8b6d73f67ea1488b12dce5",
+            measurementId: "G-5TV5JZPWLV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const btn = document.getElementById('scareBtn');
+        const status = document.getElementById('statusText');
+
+        btn.addEventListener('click', () => {
+            // ส่งคำสั่งไปยัง Firebase Path 'admin_signals/jumpscare'
+            set(ref(db, 'admin_signals/jumpscare'), {
+                trigger: true,
+                timestamp: Date.now() // ส่งเวลาปัจจุบันไปด้วย เพื่อเช็คไม่ให้ทำงานซ้ำ
+            })
+            .then(() => {
+                status.innerText = "Signal SENT! 💀 " + new Date().toLocaleTimeString();
+                setTimeout(() => status.innerText = "Ready...", 2000);
+            })
+            .catch((err) => {
+                status.innerText = "Error: " + err.message;
+            });
+        });
+    </script>
+</body>
+</html>
