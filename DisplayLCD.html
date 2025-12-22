@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Event: Wishes (Jumpscare Ready)</title>
+    <style>
+        /* Import ฟอนต์ */
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
+
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-image: url('bg.png');
+            background-size: cover;      
+            background-position: center; 
+            background-repeat: no-repeat;
+            
+            font-family: 'Kanit', sans-serif; 
+            color: white; 
+            height: 100vh; 
+            position: relative; 
+        }
+        
+        .scene { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        
+        /* Canvas พลุ */
+        #fireworks-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; pointer-events: none;
+        }
+
+        /* --- 🦉 LOGO --- */
+        .logo-box {
+            position: fixed; top: 20px; left: 20px; z-index: 200; 
+            width: 300px; animation: logoFloat 4s ease-in-out infinite; 
+        }
+        .logo-box img {
+            width: 100%; height: auto; border-radius: 50%; 
+            animation: logoGlow 2s infinite alternate; 
+        }
+        @keyframes logoGlow {
+            0% { filter: drop-shadow(0 0 10px #ff0000) drop-shadow(0 0 20px #ff0000); transform: scale(1); } 
+            33% { filter: drop-shadow(0 0 10px #00ff00) drop-shadow(0 0 20px #00ff00); transform: scale(1.02); } 
+            66% { filter: drop-shadow(0 0 10px #ffd700) drop-shadow(0 0 20px #ffd700); transform: scale(1); } 
+            100% { filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff); transform: scale(1.02); } 
+        }
+        @keyframes logoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* HEADER */
+        .main-header {
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
+            z-index: 100; text-align: center; width: 100%; pointer-events: none;
+        }
+        .main-header h1 {
+            font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 5rem; margin: 0; line-height: 1.1; text-transform: uppercase;
+            background: linear-gradient(to right, #ffffff 0%, #00e5ff 50%, #ffffff 100%);
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 229, 255, 0.6)); animation: shine 3s linear infinite;
+        }
+        .main-header .sub-line { display: block; font-size: 2.5rem; color: #b3e5fc; font-weight: 400; margin-top: -10px; text-shadow: 0 0 10px rgba(0, 150, 255, 0.5); }
+        .festive-text { font-family: 'Mountains of Christmas', cursive; font-size: 2.2rem; margin-top: 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); letter-spacing: 1px; animation: gentleFloat 3s ease-in-out infinite; }
+        .festive-text .merry { color: #ff1744; text-shadow: 0 0 10px #ff1744; margin-right: 10px; }
+        .festive-text .hny { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+        @keyframes shine { to { background-position: 200% center; } }
+        @keyframes gentleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        /* --- ✨ Wish Items ✨ --- */
+        .wish-item { 
+            position: absolute; bottom: -200px; 
+            display: flex; flex-direction: column; align-items: center; 
+            opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; 
+            width: 14%; 
+        }
+        .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
+        
+        .wish-icon { 
+            font-size: 4.5rem; 
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)); 
+            animation: swing 3s ease-in-out infinite; 
+        }
+        
+        .wish-text {
+            background: rgba(255, 255, 255, 0.95); 
+            color: #333; 
+            padding: 12px 20px; 
+            border-radius: 20px; 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            margin-top: 5px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
+            
+            width: fit-content;  
+            max-width: 100%;    
+            min-width: 60px;     
+            
+            word-wrap: break-word; 
+            border: 5px dotted #ff0000; 
+            animation: xmasLights 1.5s infinite linear; 
+        }
+
+        @keyframes swing { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
+        @keyframes xmasLights { 0% { border-color: #ff1744; box-shadow: 0 0 8px #ff1744; } 33% { border-color: #00e676; box-shadow: 0 0 8px #00e676; } 66% { border-color: #ffea00; box-shadow: 0 0 8px #ffea00; } 100% { border-color: #2979ff; box-shadow: 0 0 8px #2979ff; } }
+        
+        @keyframes floatStraight { 
+            0% { transform: translateY(0) scale(1); opacity: 0; } 
+            5% { opacity: 1; } 
+            100% { transform: translateY(-130vh) scale(1); opacity: 0.9; } 
+        }
+        @keyframes floatGentle { 
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; } 
+            5% { opacity: 1; } 
+            50% { transform: translateY(-65vh) rotate(2deg); } 
+            100% { transform: translateY(-130vh) rotate(-2deg); opacity: 0.9; } 
+        }
+
+        .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
+        
+        /* --- 🎁 QR Zone --- */
+        .qr-zone { 
+            position: fixed; bottom: 20px; right: 20px; z-index: 100; 
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); 
+            padding: 20px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.5); 
+            text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            display: flex; flex-direction: column; align-items: center; gap: 10px; 
+        }
+        .qr-zone h3 { margin: 0; font-size: 1.8rem; color: #ffea00; text-shadow: 2px 2px 0px #000000; font-weight: 800; letter-spacing: 1px; }
+        .qr-img-box { width: 160px; height: 160px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 5px solid white; }
+        .qr-img-box img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* 🔥 JUMPSCARE ZONE 🔥 */
+        #jumpscare-overlay {
+            display: none; /* ซ่อนไว้ก่อน */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: black; z-index: 99999;
+            justify-content: center; align-items: center;
+        }
+        #jumpscare-overlay img {
+            width: 100%; height: 100%; object-fit: cover;
+            animation: shake 0.1s infinite;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        /* --- 🎀 MOURNING BOW (ขวาบน) --- */
+        .mourning-bow {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 150; /* อยู่เหนือ Header แต่อาจจะอยู่ใต้ Jumpscare */
+            width: 150px; /* ปรับขนาดตามต้องการ */
+            height: auto;
+            pointer-events: none; /* เพื่อไม่ให้บังการคลิก */
+        }
+        .mourning-bow img {
+            width: 100%;
+            height: auto;
+            display: block;
+             /* ถ้าต้องการปรับความโปร่งแสง */
+            /* opacity: 0.9; */
+             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
+        }
+
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <canvas id="fireworks-canvas"></canvas>
+    </div>
+    
+    <div class="logo-box">
+        <img src="logo.png" alt="One World Library Logo">
+    </div>
+
+    <div class="mourning-bow">
+        <img src="bow.png" alt="Mourning Bow"> </div>
+
+    <div class="main-header">
+        <h1>AI EVENT</h1>
+        <span class="sub-line">AI wishes with OWL</span>
+        <div class="festive-text">
+            <span class="merry">Merry Christmas</span>
+            <span class="hny">& Happy New Year 2026</span>
+        </div>
+    </div>
+
+    <div id="sky-container"></div>
+    <div class="pool-status" id="poolCount">Memories: 0</div>
+
+    <div class="qr-zone">
+        <h3>🎁 สแกนเพื่อส่งคำอวยพร</h3>
+        <div class="qr-img-box">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://weerapat26458-ctrl.github.io/newyearwish/Sender.html" alt="Scan Me">
+        </div>
+    </div>
+
+    <div id="jumpscare-overlay">
+        <img id="jump-img" src="https://media.istockphoto.com/id/172346743/photo/spooky-man.jpg?s=612x612&w=0&k=20&c=Jvj8nyl5d3yJ4Qk-T4wbzL0h63iOswD7Qc1P_nLp2K4=" alt="Scary">
+    </div>
+    <audio id="scream-audio" src="https://www.soundjay.com/human/sounds/scream-01.mp3"></audio>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getDatabase, ref, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2Z7g9l5D9P6iLIe2UseL9UPwwzN05h4Q",
+            authDomain: "newyearwish-6006d.firebaseapp.com",
+            databaseURL: "https://newyearwish-6006d-default-rtdb.firebaseio.com",
+            projectId: "newyearwish-6006d",
+            storageBucket: "newyearwish-6006d.firebasestorage.app",
+            messagingSenderId: "2243087360",
+            appId: "1:2243087360:web:8b6d73f67ea1488b12dce5",
+            measurementId: "G-5TV5JZPWLV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const wishesRef = ref(db, 'wishes');
+        
+        // --- 🔥 JUMPSCARE LISTENER 🔥 ---
+        const jumpRef = ref(db, 'admin_signals/jumpscare');
+        const jumpOverlay = document.getElementById('jumpscare-overlay');
+        const jumpImg = document.getElementById('jump-img');
+        const screamAudio = document.getElementById('scream-audio');
+        let lastTriggerTime = 0;
+
+        onValue(jumpRef, (snapshot) => {
+            const data = snapshot.val();
+            // เช็คว่ามีคำสั่งมา และเวลาใหม่กว่า 3 วิที่แล้ว
+            if (data && data.trigger && data.timestamp > (Date.now() - 3000)) {
+                
+                if (data.timestamp > lastTriggerTime) {
+                    lastTriggerTime = data.timestamp;
+
+                    // 1. ถ้ามีการส่งลิงก์รูปมาใหม่ ให้เปลี่ยนรูป
+                    if (data.imageUrl && data.imageUrl.trim() !== "") {
+                        jumpImg.src = data.imageUrl;
+                    }
+
+                    // 2. ถ้ามีการส่งลิงก์เสียงมาใหม่ ให้เปลี่ยนเสียง
+                    if (data.soundUrl && data.soundUrl.trim() !== "") {
+                        screamAudio.src = data.soundUrl;
+                    }
+
+                    // 3. เริ่ม Jumpscare
+                    triggerJumpscare();
+                }
+            }
+        });
+
+        function triggerJumpscare() {
+            jumpOverlay.style.display = 'flex'; // โชว์ภาพ
+            screamAudio.currentTime = 0;
+            screamAudio.play().catch(e => {
+                console.log("Audio Blocked: User needs to interact with DOM first");
+            }); 
+            
+            // ซ่อนอัตโนมัติหลัง 1.5 วินาที
+            setTimeout(() => {
+                jumpOverlay.style.display = 'none';
+            }, 800);
+        }
+
+        const container = document.getElementById('sky-container');
+        const poolCountLabel = document.getElementById('poolCount');
+        const icons = ['🎅', '🎄', '🎁', '⛄', '❄️', '🦌', '🔔', '🌟', '🧦', '🐧', '🍪', '🥂'];
+        let messagePool = [ "Happy New Year!", "สวัสดีปีใหม่ 2569", "ขอให้รวยๆ", "Merry Christmas", "โชคดีตลอดปี" ];
+        const colorThemes = [
+            { name: "XmasRed", bg: "rgba(255, 235, 238, 0.95)", text: "#b71c1c" },
+            { name: "PineGreen", bg: "rgba(232, 245, 233, 0.95)", text: "#1b5e20" },
+            { name: "GoldenYear", bg: "rgba(255, 253, 231, 0.95)", text: "#f57f17" },
+            { name: "IceBlue", bg: "rgba(227, 242, 253, 0.95)", text: "#0d47a1" }
+        ];
+        const animationTypes = ['floatStraight', 'floatGentle'];
+
+        // --- ระบบ Lane (6 เลน) ---
+        const lanePositions = [5, 20, 35, 50, 65, 80]; 
+        let laneLastUsed = [0, 0, 0, 0, 0, 0]; 
+
+        // 🔥 GLOBAL TICKER CONTROL 🔥
+        let nextGlobalSpawnTime = 0; 
+
+        let displayQueue = []; 
+
+        const badWords = [
+            "kuy", "fck", "shit", "bitch", "asshole", "fuck", 
+            "ควย", "เหี้ย", "สัส", "เย็ด", "มึง", "กู", "เลว", "ชั่ว", "นรก", "ตาย",
+            "โง่", "ควาย", "ดอกทอง", "กะหรี่", "porn", "sex", "18+"
+        ];
+
+        function containsBadWords(text) {
+            if (!text) return false;
+            const lowerText = text.toLowerCase();
+            return badWords.some(word => lowerText.includes(word));
+        }
+
+        function updatePoolCount() { poolCountLabel.innerText = `Memories: ${messagePool.length}`; }
+
+        function createFloatingItem(text, laneIndex) {
+            const el = document.createElement('div');
+            el.classList.add('wish-item');
+            const iconChar = icons[Math.floor(Math.random() * icons.length)];
+            const theme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+
+            el.innerHTML = `<div class="wish-icon">${iconChar}</div><div class="wish-text">${text}</div>`;
+            const textBox = el.querySelector('.wish-text');
+            textBox.style.backgroundColor = theme.bg;
+            textBox.style.color = theme.text;
+            
+            el.style.left = lanePositions[laneIndex] + '%';
+
+            // บันทึกเวลาใช้เลน
+            laneLastUsed[laneIndex] = Date.now();
+
+            const duration = Math.floor(Math.random() * 10) + 25; 
+            const animType = animationTypes[Math.floor(Math.random() * animationTypes.length)];
+            
+            el.style.animation = `${animType} ${duration}s linear forwards`;
+            el.style.transform = `scale(${(Math.random() * 0.3) + 0.8})`;
+
+            container.appendChild(el);
+            setTimeout(() => { el.remove(); }, duration * 1000);
+        }
+
+        onChildAdded(wishesRef, (snapshot) => {
+            const data = snapshot.val();
+            if(data && data.message) {
+                if (containsBadWords(data.message)) { return; }
+
+                displayQueue.push(data.message);
+
+                if (!messagePool.includes(data.message)) {
+                    messagePool.push(data.message);
+                    updatePoolCount();
+                }
+            }
+        });
+
+        // --- 🔄 Loop ใหม่: Global Traffic Control 🔄 ---
+        setInterval(() => {
+            const now = Date.now();
+
+            if (now >= nextGlobalSpawnTime) {
+                
+                const freeLanes = lanePositions
+                    .map((_, idx) => idx)
+                    .filter(idx => now - laneLastUsed[idx] > 3500);
+
+                if (freeLanes.length > 0) {
+                    
+                    let textToSpawn = null;
+
+                    if (displayQueue.length > 0) {
+                        textToSpawn = displayQueue.shift();
+                    } 
+                    else if (document.querySelectorAll('.wish-item').length < 12 && messagePool.length > 0) {
+                        const currentItems = document.querySelectorAll('.wish-item');
+                        const onScreenTexts = Array.from(currentItems).map(item => item.querySelector('.wish-text').innerText);
+                        const candidates = messagePool.filter(text => !onScreenTexts.includes(text) && !containsBadWords(text));
+                        
+                        if (candidates.length > 0) {
+                            textToSpawn = candidates[Math.floor(Math.random() * candidates.length)];
+                        }
+                    }
+
+                    if (textToSpawn) {
+                        const chosenLane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
+                        createFloatingItem(textToSpawn, chosenLane);
+
+                        const nextDelay = Math.floor(Math.random() * 1500) + 500; 
+                        nextGlobalSpawnTime = now + nextDelay;
+                    }
+                }
+            }
+        }, 100);
+
+        // =========================================
+        // --- 🎆 Fireworks Logic ---
+        // =========================================
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let sduParticles = [], sduRocket = null, sduPoints = [];
+        let standardRockets = [], standardParticles = [];
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            calculateSDUPoints();
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function calculateSDUPoints() {
+            const tempCanvas = document.createElement('canvas');
+            const tCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            tCtx.font = "bold 150px 'Kanit', sans-serif";
+            tCtx.fillStyle = "white";
+            tCtx.textAlign = "center";
+            tCtx.textBaseline = "middle";
+            tCtx.fillText("SDU", width / 2, height / 3); 
+            const imageData = tCtx.getImageData(0, 0, width, height).data;
+            sduPoints = [];
+            const gap = 4; 
+            for (let y = 0; y < height; y += gap) {
+                for (let x = 0; x < width; x += gap) {
+                    if (imageData[(y * width + x) * 4 + 3] > 128) {
+                        sduPoints.push({ x: x, y: y });
+                    }
+                }
+            }
+        }
+
+        class SDURocket {
+            constructor() {
+                this.x = width / 2;
+                this.y = height;
+                this.vy = -13;
+                this.color = '#fff';
+                this.exploded = false;
+            }
+            update() {
+                this.y += this.vy;
+                if (this.y < height / 3 + 50) { 
+                    this.exploded = true;
+                    explodeSDU();
+                }
+            }
+            draw() {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class SDUParticle {
+            constructor(targetX, targetY) {
+                this.x = width / 2;
+                this.y = height / 3 + 50;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.speed = Math.random() * 0.06 + 0.03; 
+                this.alpha = 1;
+                this.hue = Math.random() * 360;
+                this.color = `hsl(${this.hue}, 100%, 60%)`;
+            }
+            update() {
+                this.x += (this.targetX - this.x) * this.speed;
+                this.y += (this.targetY - this.y) * this.speed;
+                this.alpha -= (Math.random() * 0.01 + 0.002);
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 1, this.y - 1, 3, 3);
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function explodeSDU() {
+            const totalParticles = 800;
+            for(let i=0; i<totalParticles; i++) {
+                if(sduPoints.length > 0) {
+                    const pt = sduPoints[Math.floor(Math.random() * sduPoints.length)];
+                    sduParticles.push(new SDUParticle(pt.x, pt.y));
+                }
+            }
+        }
+
+        class StandardRocket {
+            constructor(side) {
+                this.x = side === 'left' ? width * 0.1 + Math.random() * width * 0.1 : width * 0.8 + Math.random() * width * 0.1;
+                this.y = height;
+                this.vy = -(Math.random() * 3 + 10);
+                this.targetY = height * 0.2 + Math.random() * height * 0.3;
+                this.hue = Math.random() * 360;
+                this.exploded = false;
+            }
+            update() {
+                this.y += this.vy;
+                this.vy += 0.05;
+                if (this.vy >= 0 || this.y <= this.targetY) {
+                    this.exploded = true;
+                    explodeStandard(this.x, this.y, this.hue);
+                }
+            }
+            draw() {
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        class StandardParticle {
+            constructor(x, y, hue) {
+                this.x = x; this.y = y;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 1;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.05;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.005;
+                this.hue = hue + (Math.random() * 40 - 20);
+            }
+            update() {
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function explodeStandard(x, y, hue) {
+            for (let i = 0; i < 100; i++) {
+                standardParticles.push(new StandardParticle(x, y, hue));
+            }
+        }
+
+        function loop() {
+            requestAnimationFrame(loop);
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+            ctx.fillRect(0, 0, width, height);
+            
+            ctx.globalCompositeOperation = 'source-over'; 
+
+            if (!sduRocket && Math.random() < 0.005) { sduRocket = new SDURocket(); }
+            if (sduRocket) {
+                sduRocket.update();
+                if (!sduRocket.exploded) sduRocket.draw();
+                else sduRocket = null;
+            }
+            for (let i = sduParticles.length - 1; i >= 0; i--) {
+                sduParticles[i].update();
+                sduParticles[i].draw();
+                if (sduParticles[i].alpha <= 0) sduParticles.splice(i, 1);
+            }
+
+            if (Math.random() < 0.02) {
+                const side = Math.random() < 0.5 ? 'left' : 'right';
+                standardRockets.push(new StandardRocket(side));
+            }
+            for (let i = standardRockets.length - 1; i >= 0; i--) {
+                standardRockets[i].update();
+                standardRockets[i].draw();
+                if (standardRockets[i].exploded) standardRockets.splice(i, 1);
+            }
+            for (let i = standardParticles.length - 1; i >= 0; i--) {
+                standardParticles[i].update();
+                standardParticles[i].draw();
+                if (standardParticles[i].alpha <= 0) standardParticles.splice(i, 1);
+            }
+        }
+
+        loop();
+    </script>
+</body>
+</html>
