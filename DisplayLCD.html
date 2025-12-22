@@ -153,22 +153,22 @@
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        /* --- 🎀 MOURNING BOW (ขวาบน) --- */
+        /* --- 🎀 MOURNING BOW (แก้ไขตำแหน่ง) --- */
         .mourning-bow {
             position: fixed;
             top: 20px;
-            right: 20px;
-            z-index: 150; /* อยู่เหนือ Header แต่อาจจะอยู่ใต้ Jumpscare */
-            width: 150px; /* ปรับขนาดตามต้องการ */
+            /* แก้ไขตรงนี้: เพิ่มค่า right เพื่อดันให้มันขยับไปทางซ้ายมากขึ้น */
+            right: 100px; /* เดิม 20px */
+            z-index: 150;
+            width: 150px; 
             height: auto;
-            pointer-events: none; /* เพื่อไม่ให้บังการคลิก */
+            pointer-events: none; 
         }
         .mourning-bow img {
             width: 100%;
             height: auto;
             display: block;
-             /* ถ้าต้องการปรับความโปร่งแสง */
-            /* opacity: 0.9; */
+             /* ใช้ drop-shadow ช่วยเน้นขอบ ถ้าไฟล์ PNG โปร่งใส */
              filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
         }
 
@@ -184,7 +184,8 @@
     </div>
 
     <div class="mourning-bow">
-        <img src="bow.png" alt="Mourning Bow"> </div>
+        <img src="bow.png" alt="Mourning Bow">
+    </div>
 
     <div class="main-header">
         <h1>AI EVENT</h1>
