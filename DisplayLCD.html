@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (Jumpscare Ready)</title>
+    <title>AI Event: Wishes (Final Version)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -153,23 +153,34 @@
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        /* --- 🎀 MOURNING BOW (แก้ไขตำแหน่ง) --- */
+        /* --- 🎀 MOURNING BOW (วงกลมขาว + ลบพื้นหลัง JPG) --- */
         .mourning-bow {
             position: fixed;
             top: 20px;
-            /* แก้ไขตรงนี้: เพิ่มค่า right เพื่อดันให้มันขยับไปทางซ้ายมากขึ้น */
-            right: 75px; /* เดิม 20px */
+            right: 100px; /* ขยับออกมาจากขวาหน่อย */
             z-index: 150;
-            width: 150px; 
-            height: auto;
+            
+            /* สร้างวงกลมสีขาว */
+            width: 130px; 
+            height: 130px; 
+            border: 6px solid white; /* ขอบวงกลมสีขาว */
+            border-radius: 50%; 
+            
+            /* จัดรูปให้อยู่ตรงกลาง */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
             pointer-events: none; 
         }
+
         .mourning-bow img {
-            width: 100%;
+            width: 70%; /* ปรับขนาดรูปให้พอดีในวงกลม */
             height: auto;
             display: block;
-             /* ใช้ drop-shadow ช่วยเน้นขอบ ถ้าไฟล์ PNG โปร่งใส */
-             filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
+
+            /* สูตรลับ: ลบสีขาวออกจาก JPG ให้ใส */
+            mix-blend-mode: multiply; 
         }
 
     </style>
@@ -184,7 +195,7 @@
     </div>
 
     <div class="mourning-bow">
-        <img src="bow1.png" alt="Mourning Bow">
+        <img src="bow.jpg" alt="Mourning Bow">
     </div>
 
     <div class="main-header">
@@ -239,36 +250,31 @@
 
         onValue(jumpRef, (snapshot) => {
             const data = snapshot.val();
-            // เช็คว่ามีคำสั่งมา และเวลาใหม่กว่า 3 วิที่แล้ว
             if (data && data.trigger && data.timestamp > (Date.now() - 3000)) {
                 
                 if (data.timestamp > lastTriggerTime) {
                     lastTriggerTime = data.timestamp;
 
-                    // 1. ถ้ามีการส่งลิงก์รูปมาใหม่ ให้เปลี่ยนรูป
                     if (data.imageUrl && data.imageUrl.trim() !== "") {
                         jumpImg.src = data.imageUrl;
                     }
 
-                    // 2. ถ้ามีการส่งลิงก์เสียงมาใหม่ ให้เปลี่ยนเสียง
                     if (data.soundUrl && data.soundUrl.trim() !== "") {
                         screamAudio.src = data.soundUrl;
                     }
 
-                    // 3. เริ่ม Jumpscare
                     triggerJumpscare();
                 }
             }
         });
 
         function triggerJumpscare() {
-            jumpOverlay.style.display = 'flex'; // โชว์ภาพ
+            jumpOverlay.style.display = 'flex'; 
             screamAudio.currentTime = 0;
             screamAudio.play().catch(e => {
                 console.log("Audio Blocked: User needs to interact with DOM first");
             }); 
             
-            // ซ่อนอัตโนมัติหลัง 1.5 วินาที
             setTimeout(() => {
                 jumpOverlay.style.display = 'none';
             }, 800);
@@ -286,7 +292,7 @@
         ];
         const animationTypes = ['floatStraight', 'floatGentle'];
 
-        // --- ระบบ Lane (6 เลน) ---
+        // --- ระบบ Lane ---
         const lanePositions = [5, 20, 35, 50, 65, 80]; 
         let laneLastUsed = [0, 0, 0, 0, 0, 0]; 
 
@@ -322,7 +328,6 @@
             
             el.style.left = lanePositions[laneIndex] + '%';
 
-            // บันทึกเวลาใช้เลน
             laneLastUsed[laneIndex] = Date.now();
 
             const duration = Math.floor(Math.random() * 10) + 25; 
@@ -349,7 +354,7 @@
             }
         });
 
-        // --- 🔄 Loop ใหม่: Global Traffic Control 🔄 ---
+        // --- Loop Flow Control ---
         setInterval(() => {
             const now = Date.now();
 
