@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (Final Responsive)</title>
+    <title>AI Event: Wishes (1410x2250 Support)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -169,12 +169,12 @@
         .mourning-bow img { width: 70%; height: auto; display: block; mix-blend-mode: multiply; }
 
         /* ========================================= */
-        /* 📱 MOBILE RESPONSIVE TWEAKS (แนวตั้ง) 📱 */
+        /* 📱 RESPONSIVE TWEAKS (รองรับ 1410x2250) 📱 */
         /* ========================================= */
-        @media screen and (max-width: 768px) {
+        /* ปรับ Breakpoint เป็น 1600px เพื่อให้จอ 1410px เข้าเงื่อนไข Mobile Layout */
+        @media screen and (max-width: 1600px) {
             
             /* --- HEADER --- */
-            /* ดัน Header ลงมาเพื่อหลบ Logo ที่ใหญ่ขึ้น */
             .main-header { top: 80px; width: 95%; }
             .main-header h1 { font-size: 2.8rem; }
             .main-header .sub-line { font-size: 1.2rem; }
@@ -439,8 +439,8 @@
             tempCanvas.width = width;
             tempCanvas.height = height;
             
-            // 🔥 ปรับขนาด Font SDU ตามขนาดหน้าจอ 🔥
-            const fontSize = width < 768 ? 80 : 150; 
+            // 🔥 ปรับขนาด Font SDU (ถ้าจอกว้างน้อยกว่า 1600px ให้ใช้ฟอนต์เล็ก)
+            const fontSize = width < 1600 ? 100 : 150; 
             tCtx.font = `bold ${fontSize}px 'Kanit', sans-serif`;
             
             tCtx.fillStyle = "white";
