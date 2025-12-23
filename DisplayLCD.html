@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (Final Version)</title>
+    <title>AI Event: Wishes (Responsive Ver.)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -34,6 +34,7 @@
         .logo-box {
             position: fixed; top: 20px; left: 20px; z-index: 200; 
             width: 300px; animation: logoFloat 4s ease-in-out infinite; 
+            transition: all 0.5s ease;
         }
         .logo-box img {
             width: 100%; height: auto; border-radius: 50%; 
@@ -51,6 +52,7 @@
         .main-header {
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
             z-index: 100; text-align: center; width: 100%; pointer-events: none;
+            transition: all 0.5s ease;
         }
         .main-header h1 {
             font-family: 'Kanit', sans-serif; font-weight: 800; font-size: 5rem; margin: 0; line-height: 1.1; text-transform: uppercase;
@@ -71,6 +73,7 @@
             display: flex; flex-direction: column; align-items: center; 
             opacity: 0.9; cursor: pointer; text-align: center; pointer-events: auto; 
             width: 14%; 
+            transition: transform 0.3s;
         }
         .wish-item:hover { z-index: 200; opacity: 1; transform: scale(1.3) !important; filter: brightness(1.2); }
         
@@ -114,7 +117,7 @@
             100% { transform: translateY(-130vh) rotate(-2deg); opacity: 0.9; } 
         }
 
-        .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
+        .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; display: none; /* ซ่อนนับ memory บนมือถือถ้าเกะกะ */ }
         
         /* --- 🎁 QR Zone --- */
         .qr-zone { 
@@ -123,6 +126,7 @@
             padding: 20px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.5); 
             text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
             display: flex; flex-direction: column; align-items: center; gap: 10px; 
+            transition: all 0.5s ease;
         }
         .qr-zone h3 { margin: 0; font-size: 1.8rem; color: #ffea00; text-shadow: 2px 2px 0px #000000; font-weight: 800; letter-spacing: 1px; }
         .qr-img-box { width: 160px; height: 160px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 5px solid white; }
@@ -130,7 +134,7 @@
 
         /* 🔥 JUMPSCARE ZONE 🔥 */
         #jumpscare-overlay {
-            display: none; /* ซ่อนไว้ก่อน */
+            display: none; 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: black; z-index: 99999;
             justify-content: center; align-items: center;
@@ -153,34 +157,43 @@
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        /* --- 🎀 MOURNING BOW (วงกลมขาว + ลบพื้นหลัง JPG) --- */
+        /* --- 🎀 MOURNING BOW --- */
         .mourning-bow {
-            position: fixed;
-            top: 55px;
-            right: 72px; /* ขยับออกมาจากขวาหน่อย */
-            z-index: 150;
-            
-            /* สร้างวงกลมสีขาว */
-            width: 130px; 
-            height: 130px; 
-            border: 7px solid white; /* ขอบวงกลมสีขาว */
-            border-radius: 50%; 
-            
-            /* จัดรูปให้อยู่ตรงกลาง */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
+            position: fixed; top: 20px; right: 100px; z-index: 150;
+            width: 130px; height: 130px; 
+            border: 6px solid white; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center;
             pointer-events: none; 
+            transition: all 0.5s ease;
         }
+        .mourning-bow img { width: 70%; height: auto; display: block; mix-blend-mode: multiply; }
 
-        .mourning-bow img {
-            width: 80%; /* ปรับขนาดรูปให้พอดีในวงกลม */
-            height: auto;
-            display: block;
-
-            /* สูตรลับ: ลบสีขาวออกจาก JPG ให้ใส */
-            mix-blend-mode: multiply; 
+        /* ========================================= */
+        /* 📱 MOBILE RESPONSIVE TWEAKS 📱 */
+        /* ========================================= */
+        @media screen and (max-width: 768px) {
+            /* ปรับ Header ให้อยู่สูงขึ้นและเล็กลง */
+            .main-header { top: 60px; width: 90%; }
+            .main-header h1 { font-size: 2.8rem; }
+            .main-header .sub-line { font-size: 1.2rem; }
+            .festive-text { font-size: 1.5rem; margin-top: 5px; }
+            
+            /* ย่อ Logo */
+            .logo-box { width: 80px; top: 10px; left: 10px; }
+            
+            /* ย่อ Bow และชิดขวามากขึ้น */
+            .mourning-bow { width: 70px; height: 70px; right: 10px; top: 10px; border-width: 3px; }
+            
+            /* ย่อ QR Code ให้เล็กลงมาก (Scale down) เพื่อไม่บังจอ */
+            .qr-zone { transform: scale(0.6); transform-origin: bottom right; right: 10px; bottom: 10px; padding: 15px; }
+            
+            /* ปรับขนาดคำอวยพรให้ใหญ่อ่านง่ายบนจอมือถือ */
+            .wish-item { width: 25%; } 
+            .wish-icon { font-size: 3rem; }
+            .wish-text { font-size: 1rem; padding: 8px 12px; border-width: 3px; }
+            
+            /* ซ่อนข้อความ Memory เล็กๆ มุมจอ */
+            .pool-status { display: none; }
         }
 
     </style>
@@ -195,7 +208,7 @@
     </div>
 
     <div class="mourning-bow">
-        <img src="bow1.png" alt="Mourning Bow">
+        <img src="bow.jpg" alt="Mourning Bow">
     </div>
 
     <div class="main-header">
@@ -414,7 +427,11 @@
             const tCtx = tempCanvas.getContext('2d');
             tempCanvas.width = width;
             tempCanvas.height = height;
-            tCtx.font = "bold 150px 'Kanit', sans-serif";
+            
+            // 🔥 ปรับขนาด Font SDU ตามขนาดหน้าจอ 🔥
+            const fontSize = width < 768 ? 80 : 150; 
+            tCtx.font = `bold ${fontSize}px 'Kanit', sans-serif`;
+            
             tCtx.fillStyle = "white";
             tCtx.textAlign = "center";
             tCtx.textBaseline = "middle";
@@ -587,8 +604,4 @@
         loop();
     </script>
 </body>
-
 </html>
-
-
-
