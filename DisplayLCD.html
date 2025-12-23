@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (White Bow BG)</title>
+    <title>AI Event: Wishes (No Overflow)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -97,7 +97,9 @@
             max-width: 100%;    
             min-width: 60px;     
             
-            word-wrap: break-word; 
+            word-wrap: break-word; /* ป้องกันข้อความยาวๆ ล้น */
+            word-break: break-word;
+            
             border: 5px dotted #ff0000; 
             animation: xmasLights 1.5s infinite linear; 
         }
@@ -162,9 +164,7 @@
             position: fixed; top: 20px; right: 100px; z-index: 150;
             width: 130px; height: 130px; 
             border: 6px solid white; border-radius: 50%; 
-            
-            background-color: white; /* ✅ เพิ่มพื้นหลังสีขาวที่นี่ครับ */
-
+            background-color: white; 
             display: flex; justify-content: center; align-items: center;
             pointer-events: none; 
             transition: all 0.5s ease;
@@ -174,42 +174,30 @@
         /* ========================================= */
         /* 📱 RESPONSIVE TWEAKS (รองรับ 1410x2250) 📱 */
         /* ========================================= */
-        /* ปรับ Breakpoint เป็น 1600px เพื่อให้จอ 1410px เข้าเงื่อนไข Mobile Layout */
         @media screen and (max-width: 1600px) {
             
-            /* --- HEADER --- */
             .main-header { top: 80px; width: 95%; }
             .main-header h1 { font-size: 2.8rem; }
             .main-header .sub-line { font-size: 1.2rem; }
             .festive-text { font-size: 1.4rem; margin-top: 5px; }
             
-            /* --- ✅ 1. LOGO ใหญ่ขึ้น (140px) --- */
-            .logo-box { 
-                width: 140px; 
-                top: 15px; 
-                left: 15px; 
-            }
+            .logo-box { width: 140px; top: 15px; left: 15px; }
             
-            /* --- BOW --- */
             .mourning-bow { width: 70px; height: 70px; right: 15px; top: 15px; border-width: 3px; }
             
-            /* --- ✅ 2. QR CODE เล็กลง (เหลือ 40%) --- */
             .qr-zone { 
                 transform: scale(0.4); 
                 transform-origin: bottom right; 
-                right: 5px; 
-                bottom: 5px; 
-                padding: 15px; 
+                right: 5px; bottom: 5px; padding: 15px; 
             }
             
-            /* --- WISH ITEMS --- */
-            .wish-item { width: 30%; } 
+            /* ✅ ปรับความกว้างกล่องข้อความให้เหมาะสม ไม่กว้างเกินไปจนดันขอบ */
+            .wish-item { width: 28%; max-width: 300px; } 
             .wish-icon { font-size: 2.8rem; }
             .wish-text { font-size: 0.9rem; padding: 8px 10px; border-width: 2px; }
             
             .pool-status { display: none; }
         }
-
     </style>
 </head>
 <body>
@@ -319,13 +307,36 @@
         ];
         const animationTypes = ['floatStraight', 'floatGentle'];
 
-        // --- ระบบ Lane ---
-        const lanePositions = [5, 20, 35, 50, 65, 80]; 
+        // --- ✅ แก้ไข: ระบบ Lane แบบ Dynamic (ป้องกันตกขอบ) ---
+        let lanePositions = [5, 20, 35, 50, 65, 80]; 
         let laneLastUsed = [0, 0, 0, 0, 0, 0]; 
+
+        // ฟังก์ชันอัปเดต Lane ตามขนาดหน้าจอ
+        function updateLanes() {
+            if (window.innerWidth <= 1600) {
+                // จอมือถือ/แนวตั้ง: ตัด Lane ขวาสุดทิ้ง และกระจายใหม่
+                // (Max width ของ item คือ ~30% ดังนั้นห้ามวางเกิน 70%)
+                lanePositions = [5, 22, 39, 56, 68]; 
+                
+                // ปรับขนาด Array เก็บเวลาให้เท่ากัน
+                if (laneLastUsed.length !== lanePositions.length) {
+                    laneLastUsed = new Array(lanePositions.length).fill(0);
+                }
+            } else {
+                // จอคอม: ใช้แบบเดิมเต็มจอ
+                lanePositions = [5, 20, 35, 50, 65, 80];
+                if (laneLastUsed.length !== lanePositions.length) {
+                    laneLastUsed = new Array(lanePositions.length).fill(0);
+                }
+            }
+        }
+        
+        // เรียกใช้ตอนเริ่มและตอนปรับขนาดจอ
+        window.addEventListener('resize', updateLanes);
+        updateLanes(); 
 
         // 🔥 GLOBAL TICKER CONTROL 🔥
         let nextGlobalSpawnTime = 0; 
-
         let displayQueue = []; 
 
         const badWords = [
@@ -353,6 +364,7 @@
             textBox.style.backgroundColor = theme.bg;
             textBox.style.color = theme.text;
             
+            // ใช้ Lane ที่คำนวณใหม่
             el.style.left = lanePositions[laneIndex] + '%';
 
             laneLastUsed[laneIndex] = Date.now();
@@ -432,6 +444,7 @@
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             calculateSDUPoints();
+            updateLanes(); // เรียกอัปเดตเลนด้วยเมื่อจอเปลี่ยน
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -442,7 +455,6 @@
             tempCanvas.width = width;
             tempCanvas.height = height;
             
-            // 🔥 ปรับขนาด Font SDU (ถ้าจอกว้างน้อยกว่า 1600px ให้ใช้ฟอนต์เล็ก)
             const fontSize = width < 1600 ? 100 : 150; 
             tCtx.font = `bold ${fontSize}px 'Kanit', sans-serif`;
             
