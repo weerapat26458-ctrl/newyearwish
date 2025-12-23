@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (Responsive Ver.)</title>
+    <title>AI Event: Wishes (Final Responsive)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -117,7 +117,7 @@
             100% { transform: translateY(-130vh) rotate(-2deg); opacity: 0.9; } 
         }
 
-        .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; display: none; /* ซ่อนนับ memory บนมือถือถ้าเกะกะ */ }
+        .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
         
         /* --- 🎁 QR Zone --- */
         .qr-zone { 
@@ -169,30 +169,41 @@
         .mourning-bow img { width: 70%; height: auto; display: block; mix-blend-mode: multiply; }
 
         /* ========================================= */
-        /* 📱 MOBILE RESPONSIVE TWEAKS 📱 */
+        /* 📱 MOBILE RESPONSIVE TWEAKS (แนวตั้ง) 📱 */
         /* ========================================= */
         @media screen and (max-width: 768px) {
-            /* ปรับ Header ให้อยู่สูงขึ้นและเล็กลง */
-            .main-header { top: 60px; width: 90%; }
+            
+            /* --- HEADER --- */
+            /* ดัน Header ลงมาเพื่อหลบ Logo ที่ใหญ่ขึ้น */
+            .main-header { top: 80px; width: 95%; }
             .main-header h1 { font-size: 2.8rem; }
             .main-header .sub-line { font-size: 1.2rem; }
-            .festive-text { font-size: 1.5rem; margin-top: 5px; }
+            .festive-text { font-size: 1.4rem; margin-top: 5px; }
             
-            /* ย่อ Logo */
-            .logo-box { width: 80px; top: 10px; left: 10px; }
+            /* --- ✅ 1. LOGO ใหญ่ขึ้น (140px) --- */
+            .logo-box { 
+                width: 140px; 
+                top: 15px; 
+                left: 15px; 
+            }
             
-            /* ย่อ Bow และชิดขวามากขึ้น */
-            .mourning-bow { width: 70px; height: 70px; right: 10px; top: 10px; border-width: 3px; }
+            /* --- BOW --- */
+            .mourning-bow { width: 70px; height: 70px; right: 15px; top: 15px; border-width: 3px; }
             
-            /* ย่อ QR Code ให้เล็กลงมาก (Scale down) เพื่อไม่บังจอ */
-            .qr-zone { transform: scale(0.6); transform-origin: bottom right; right: 10px; bottom: 10px; padding: 15px; }
+            /* --- ✅ 2. QR CODE เล็กลง (เหลือ 40%) --- */
+            .qr-zone { 
+                transform: scale(0.4); 
+                transform-origin: bottom right; 
+                right: 5px; 
+                bottom: 5px; 
+                padding: 15px; 
+            }
             
-            /* ปรับขนาดคำอวยพรให้ใหญ่อ่านง่ายบนจอมือถือ */
-            .wish-item { width: 25%; } 
-            .wish-icon { font-size: 3rem; }
-            .wish-text { font-size: 1rem; padding: 8px 12px; border-width: 3px; }
+            /* --- WISH ITEMS --- */
+            .wish-item { width: 30%; } 
+            .wish-icon { font-size: 2.8rem; }
+            .wish-text { font-size: 0.9rem; padding: 8px 10px; border-width: 2px; }
             
-            /* ซ่อนข้อความ Memory เล็กๆ มุมจอ */
             .pool-status { display: none; }
         }
 
@@ -605,4 +616,3 @@
     </script>
 </body>
 </html>
-
