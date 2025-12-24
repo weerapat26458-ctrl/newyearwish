@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Event: Wishes (QR Left Middle)</title>
+    <title>AI Event: Wishes (Full Width Fix)</title>
     <style>
         /* Import ฟอนต์ */
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;800&family=Mountains+of+Christmas:wght@700&display=swap');
@@ -122,12 +122,12 @@
 
         .pool-status { position: fixed; top: 10px; left: 10px; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 50; }
         
-        /* --- 🎁 QR Zone (แก้ไขตำแหน่งเป็น ซ้ายกลาง) --- */
+        /* --- 🎁 QR Zone (Left Middle) --- */
         .qr-zone { 
             position: fixed; 
-            top: 50%;           /* อยู่กึ่งกลางแนวตั้ง */
-            left: 20px;         /* ชิดซ้าย */
-            transform: translateY(-50%); /* จัดกึ่งกลางพอดี */
+            top: 50%;           
+            left: 20px;         
+            transform: translateY(-50%); 
             z-index: 100; 
             
             background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); 
@@ -191,17 +191,12 @@
             
             .mourning-bow { width: 70px; height: 70px; right: 15px; top: 15px; border-width: 3px; }
             
-            /* ✅ แก้ไข: ย้าย QR ใน Mobile ให้ชิดซ้ายกลาง (ย่อขนาด) */
+            /* QR Zone: ซ้ายกลาง */
             .qr-zone { 
-                /* ใช้ transform ผสม (scale + center Y) */
                 transform: translateY(-50%) scale(0.4); 
-                /* ยึดจุดหมุนเป็น ซ้ายกลาง */
                 transform-origin: left center; 
-                
                 left: 10px; 
                 top: 50%; 
-                
-                /* ล้างค่าเก่าที่อาจจะติดมา */
                 right: auto; 
                 bottom: auto; 
                 padding: 15px; 
@@ -326,18 +321,18 @@
         let lanePositions = [5, 20, 35, 50, 65, 80]; 
         let laneLastUsed = [0, 0, 0, 0, 0, 0]; 
 
-        // --- ✅ แก้ไข 2: ปรับตำแหน่ง Lane ให้ชิดซ้ายมากขึ้น (Safe Zone) ---
+        // --- ✅ แก้ไข 3: ปรับให้เต็มจอมากขึ้น ลดช่องว่างด้านขวา ---
         function updateLanes() {
             if (window.innerWidth <= 1600) {
-                // จอมือถือ: ใช้ Lane แค่ 5 ช่อง และช่องขวาสุดเริ่มที่ 60%
-                // (60% + width 25% = 85%) เหลือที่ขอบขวา 15% ปลอดภัยแน่นอน
-                lanePositions = [2, 18, 34, 50, 60]; 
+                // จอมือถือ/จอเล็ก: กระจาย Lane ให้ออกไปทางขวามากขึ้น
+                // เลนสุดท้าย 74% + item width 25% = 99% (เต็มจอพอดี)
+                lanePositions = [2, 20, 38, 56, 74]; 
                 
                 if (laneLastUsed.length !== lanePositions.length) {
                     laneLastUsed = new Array(lanePositions.length).fill(0);
                 }
             } else {
-                // จอคอม: ใช้แบบเดิม
+                // จอใหญ่
                 lanePositions = [5, 20, 35, 50, 65, 80];
                 if (laneLastUsed.length !== lanePositions.length) {
                     laneLastUsed = new Array(lanePositions.length).fill(0);
